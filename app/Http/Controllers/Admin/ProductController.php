@@ -59,8 +59,9 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-         $vendors = Vendor::all();
-         return view('admin.products.edit', compact('product', 'vendors', 'categories'));
+        $vendors = Vendor::all();
+        $categories = ExpenseCategory::all();
+        return view('admin.products.edit', compact('product', 'vendors', 'categories'));
     }
 
     public function update(Request $request, Product $product)

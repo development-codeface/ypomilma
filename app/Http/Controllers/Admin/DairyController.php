@@ -27,7 +27,7 @@ class DairyController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:150',
             'location' => 'required|string|max:255',
-             'admin_userid' => 'required|exists:users,id',
+            'admin_userid' => 'required|exists:users,id',
             'phone' => 'required|string|max:20',
         ]);
 
@@ -41,7 +41,7 @@ class DairyController extends Controller
          abort_if(Gate::denies('dairy_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
            $users = \App\Models\User::all();
 
-        return view('admin.dairies.edit', compact('dairy,users'));
+        return view('admin.dairies.edit', compact('dairy','users'));
     }
 
     public function update(Request $request, Dairy $dairy)
@@ -49,7 +49,7 @@ class DairyController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:150',
             'location' => 'required|string|max:255',
-            'presidentname' => 'required|string|max:100',
+            'admin_userid' => 'required|exists:users,id',
             'phone' => 'required|string|max:20',
         ]);
 
