@@ -2,6 +2,15 @@
 
 @section('content')
 <style>
+    .filter-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+    }
+    .filter-section .form-group {
+        margin-right: 15px;
+    }
     td .action-buttons {
         display: flex;
         gap: 5px;
@@ -9,16 +18,22 @@
 </style>
 
 <div class="card">
-    <div class="card-header">
-        <p><i class="fi fi-br-list mr_15_icc"></i> Fund Allocations</p>
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fi fi-br-list mr_10_icc"></i> Fund Allocations</h5>
+        <a href="{{ route('admin.fund_allocations.create') }}" class="btn btn-success">
+            <i class="fi fi-br-plus-small mr_5"></i> Add Fund
+        </a>
+    </div>
 
-        <div class="row align-items-center mb-2">
-            <div class="col-md-9">
-                <form method="GET" action="{{ route('admin.fund_allocations.index') }}" class="form-inline">
-
-                    {{-- Dairy Filter --}}
-                    <label for="dairy_id" class="mr-2">Dairy:</label>
-                    <select name="dairy_id" id="dairy_id" class="form-control mr-3">
+    <div class="card-body">
+        {{-- FILTER SECTION --}}
+        <div class="filter-section">
+            <form method="GET" action="{{ route('admin.fund_allocations.index') }}" class="form-inline row align-items-end">
+                
+                {{-- Dairy --}}
+                <div class="form-group col-md-4">
+                    <label for="dairy_id" class="form-label">Dairy</label>
+                    <select name="dairy_id" id="dairy_id" class="form-control w-100">
                         <option value="">-- All Dairies --</option>
                         @foreach ($dairies as $dairy)
                             <option value="{{ $dairy->id }}" {{ request('dairy_id') == $dairy->id ? 'selected' : '' }}>
@@ -26,10 +41,12 @@
                             </option>
                         @endforeach
                     </select>
+                </div>
 
-                    {{-- Financial Year Filter --}}
-                    <label for="financial_year" class="mr-2">Financial Year:</label>
-                    <select name="financial_year" id="financial_year" class="form-control mr-3">
+                {{-- Financial Year --}}
+                <div class="form-group col-md-4">
+                    <label for="financial_year" class="form-label">Financial Year</label>
+                    <select name="financial_year" id="financial_year" class="form-control w-100">
                         <option value="">-- All Years --</option>
                         @foreach ($financialYears as $year)
                             <option value="{{ $year }}" {{ request('financial_year') == $year ? 'selected' : '' }}>
@@ -37,27 +54,26 @@
                             </option>
                         @endforeach
                     </select>
+                </div>
 
-                    {{-- Buttons --}}
-                    <button type="submit" class="btn btn-primary mr-2">Filter</button>
+                {{-- Buttons --}}
+                <div class="form-group col-md-4 d-flex">
+                    <button type="submit" class="btn btn-primary mr-2">
+                        <i class="fi fi-br-filter mr_5"></i> Filter
+                    </button>
                     @if(request('financial_year') || request('dairy_id'))
-                        <a href="{{ route('admin.fund_allocations.index') }}" class="btn btn-secondary">Reset</a>
+                        <a href="{{ route('admin.fund_allocations.index') }}" class="btn btn-secondary">
+                            <i class="fi fi-br-rotate-left mr_5"></i> Reset
+                        </a>
                     @endif
-                </form>
-            </div>
-
-            <div class="col-md-3 text-right">
-                <a href="{{ route('admin.fund_allocations.create') }}" class="btn btn-success">
-                    <i class="fi fi-br-plus-small mr_5"></i> Add Fund 
-                </a>
-            </div>
+                </div>
+            </form>
         </div>
-    </div>
 
-    <div class="card-body">
+        {{-- TABLE --}}
         <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover">
-                <thead>
+                <thead class="thead-light">
                     <tr>
                         <th>ID</th>
                         <th>Dairy</th>
@@ -77,12 +93,15 @@
                             <td>{{ number_format($allocation->amount, 2) }}</td>
                             <td>{{ $allocation->allocation_date }}</td>
                             <td>{{ $allocation->financial_year }}</td>
-                            <td><span class="badge badge-success">{{ ucfirst($allocation->status) }}</span></td>
+                            <td>
+                                <span class="badge badge-{{ $allocation->status === 'active' ? 'success' : 'secondary' }}">
+                                    {{ ucfirst($allocation->status) }}
+                                </span>
+                            </td>
                             <td>{{ $allocation->remarks ?? '-' }}</td>
                             <td>
                                 <div class="action-buttons">
-                                    <a href="{{ route('admin.fund_allocations.show', $allocation->id) }}"
-                                       class="btn btn-xs btn-info">
+                                    <a href="{{ route('admin.fund_allocations.show', $allocation->id) }}" class="btn btn-xs btn-info">
                                         <i class="fi fi-br-eye"></i>
                                     </a>
                                 </div>

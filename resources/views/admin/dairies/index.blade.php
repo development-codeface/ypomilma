@@ -42,7 +42,7 @@
                             </th>
                             <th>
                                 <i class="fi fi-br-user ictabl"></i>
-                               President Name
+                              Admin Name
                             </th>
                             <th>
                                 <i class="fi fi-br-phone ictabl"></i>
@@ -61,7 +61,7 @@
                                 <td>{{ $dairy->id ?? '' }}</td>
                                 <td>{{ $dairy->name ?? '' }}</td>
                                 <td>{{ $dairy->location ?? '' }}</td>
-                                <td>{{ $dairy->presidentname ?? '' }}</td>
+                                <td>{{ $dairy->admin->name ?? '' }}</td>
                                 <td>{{ $dairy->phone ?? '' }}</td>
                                 <td>
                                     <div class="action-buttons">

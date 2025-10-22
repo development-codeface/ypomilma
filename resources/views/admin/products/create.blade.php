@@ -11,7 +11,25 @@
             @csrf
 
             <div class="form-group">
-                <label class="required" for="productname">Product Name</label>
+                <label class="required">Item Code</label>
+                <input type="text" name="item_code" class="form-control" value="{{ old('item_code') }}" required>
+            </div>
+
+            <div class="form-group">
+                <label class="required">Category</label>
+                <select name="category_id" class="form-control" required>
+                    <option value="">Select a Category</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+
+            <div class="form-group">
+                <label class="required" for="productname">Item Name</label>
                 <input type="text" name="productname" class="form-control" value="{{ old('productname') }}" required>
             </div>
 

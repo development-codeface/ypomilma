@@ -64,6 +64,16 @@
                 </li>
             @endcan
 
+             @can('dairy_access')
+                <li class="nav-item">
+                    <a href="{{ route('admin.dairies.index') }}"
+                        class="nav-link {{ request()->is('admin/dairies') || request()->is('admin/dairies/*') ? 'active' : '' }}">
+                        <i class="fi fi-br-box nav-icon"></i>
+                        Dairy
+                    </a>
+                </li>
+            @endcan
+
              @can('vendor_access')
                 <li class="nav-item">
                     <a href="{{ route('admin.vendors.index') }}"
@@ -74,7 +84,7 @@
                 </li>
             @endcan
 
-             @can('vendor_access')
+             @can('product_access')
                 <li class="nav-item">
                     <a href="{{ route('admin.products.index') }}"
                         class="nav-link {{ request()->is('admin/products') || request()->is('admin/products/*') ? 'active' : '' }}">
@@ -83,6 +93,26 @@
                     </a>
                 </li>
             @endcan
+            
+             @can('expensecategory_access')
+                <li class="nav-item">
+                    <a href="{{ route('admin.expense_categories.index') }}"
+                        class="nav-link {{ request()->is('admin/expense_categories') || request()->is('admin/expense_categories/*') ? 'active' : '' }}">
+                        <i class="fi fi-br-box nav-icon"></i>
+                        Expense Category
+                    </a>
+                </li>
+            @endcan
+             @can('fundallocation_access')
+                <li class="nav-item">
+                    <a href="{{ route('admin.fund_allocations.index') }}"
+                        class="nav-link {{ request()->is('admin/fund_allocations') || request()->is('admin/fund_allocations/*') ? 'active' : '' }}">
+                        <i class="fi fi-br-box nav-icon"></i>
+                       Fund Allocation
+                    </a>
+                </li>
+            @endcan
+           
            
             @if (file_exists(app_path('Http/Controllers/Auth/ChangePasswordController.php')))
                 @can('profile_password_edit')

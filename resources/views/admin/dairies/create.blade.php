@@ -33,15 +33,21 @@
                 @endif
              </div>
 
-            {{-- President Name --}}
             <div class="form-group">
-                <label for="presidentname">President Name</label>
-                <input class="form-control {{ $errors->has('presidentname') ? 'is-invalid' : '' }}"
-                       type="text" name="presidentname" id="presidentname" value="{{ old('presidentname') }}">
-                @if($errors->has('presidentname'))
-                    <div class="invalid-feedback">{{ $errors->first('presidentname') }}</div>
-                @endif
-            </div>
+            <label for="admin_userid">Admin Name</label>
+            <select class="form-control {{ $errors->has('admin_userid') ? 'is-invalid' : '' }}"
+                    name="admin_userid" id="admin_userid">
+                <option value="">-- Select Admin --</option>
+                @foreach($users as $user)
+                    <option value="{{ $user->id }}" {{ old('admin_userid') == $user->id ? 'selected' : '' }}>
+                        {{ $user->name }}
+                    </option>
+                @endforeach
+            </select>
+            @if($errors->has('admin_userid'))
+                <div class="invalid-feedback">{{ $errors->first('admin_userid') }}</div>
+            @endif
+        </div>
 
             {{-- Phone --}}
             <div class="form-group">

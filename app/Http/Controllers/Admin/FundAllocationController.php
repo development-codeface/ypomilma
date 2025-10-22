@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\FundAllocation;
 use App\Models\Dairy;
 use Illuminate\Http\Request;
+use Gate;
+use Symfony\Component\HttpFoundation\Response;
 
 class FundAllocationController extends Controller
 {
   public function index(Request $request)
 {
+    abort_if(Gate::denies('fundallocation_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
     // Fetch dropdown options
     $financialYears = FundAllocation::select('financial_year')
         ->distinct()
@@ -40,6 +43,7 @@ class FundAllocationController extends Controller
 
     public function create()
     {
+        abort_if(Gate::denies('fundallocation_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $dairies = Dairy::all();
         return view('admin.fund_allocations.create', compact('dairies'));
     }
@@ -69,6 +73,7 @@ class FundAllocationController extends Controller
 
     public function show($id)
     {
+        abort_if(Gate::denies('fundallocation_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $allocation = FundAllocation::with('dairy')->findOrFail($id);
         return view('admin.fund_allocations.show', compact('allocation'));
     }

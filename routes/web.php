@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\DairyController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ExpenseCategoryController;
 use App\Http\Controllers\Admin\FundAllocationController;
+use App\Http\Controllers\Admin\InvoiceController;
 // Auth/Profile Controllers
 use App\Http\Controllers\Auth\ChangePasswordController;
 
@@ -61,6 +62,9 @@ Route::group([
     Route::resource('products', ProductController::class);
     Route::resource('expense_categories', ExpenseCategoryController::class);
     Route::resource('fund_allocations', FundAllocationController::class);
+    Route::resource('invoices', InvoiceController::class);
+    Route::post('invoices/{invoice}/cancel', [InvoiceController::class, 'cancel'])
+    ->name('invoices.cancel');
 
 
 });

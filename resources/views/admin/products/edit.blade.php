@@ -10,9 +10,25 @@
         <form method="POST" action="{{ route('admin.products.update', $product->id) }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
+            <div class="form-group">
+                <label class="required">Item Code</label>
+                <input type="text" name="item_code" class="form-control" value="{{ old('item_code', $product->item_code) }}" required>
+            </div>
 
             <div class="form-group">
-                <label>Product Name</label>
+                <label class="required">Category</label>
+                <select name="category_id" class="form-control" required>
+                    <option value="">Select a Category</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Item Name</label>
                 <input type="text" name="productname" class="form-control" value="{{ old('productname', $product->productname) }}" required>
             </div>
 

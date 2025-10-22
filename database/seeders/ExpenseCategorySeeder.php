@@ -10,9 +10,9 @@ class ExpenseCategorySeeder extends Seeder
     public function run(): void
     {
         DB::table('expense_categories')->insert([
-            ['name' => 'Fuel'],
-            ['name' => 'Repair'],
-            ['name' => 'Feed Purchase'],
+            ['name' => 'Cold Chain'],
+            ['name' => 'Market Promotion'],
+            ['name' => 'POP Materials'],
         ]);
     }
 }
