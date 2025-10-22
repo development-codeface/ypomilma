@@ -88,7 +88,7 @@
                     </div>
                 </div>
             </li>
-            <li class="nav-item dropdown notification_dropdown">
+            <!-- <li class="nav-item dropdown notification_dropdown">
                 <a class="nav-link  ai-icon" href="javascript:void(0)" role="button" data-toggle="dropdown">
                     <svg width="28" height="28" viewBox="0 0 28 28" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
@@ -119,7 +119,7 @@
                     <a class="all-notification" href="javascript:void(0)">See all notifications <i
                             class="ti-arrow-right"></i></a>
                 </div>
-            </li>
+            </li> -->
 
             <li class="nav-item dropdown header-profile">
                 <a class="nav-link" href="javascript:void(0)" role="button" data-toggle="dropdown">
@@ -130,7 +130,7 @@
          </div> -->
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
-                    <a href="app-profile.html" class="dropdown-item ai-icon">
+                    <!-- <a href="app-profile.html" class="dropdown-item ai-icon">
                         <svg id="icon-user1" xmlns="http://www.w3.org/2000/svg" class="text-primary" width="18"
                             height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -138,7 +138,7 @@
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>
                         <span class="ml-2">Profile </span>
-                    </a>
+                    </a> -->
 
                     <a href="page-login.html"
                         onclick="event.preventDefault(); document.getElementById('logoutform').submit();"
