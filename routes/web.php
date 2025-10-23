@@ -26,7 +26,7 @@ Auth::routes(['register' => false]);
 Route::group([
     'prefix' => 'admin',
     'as' => 'admin.',
-    'middleware' => [ 'auth', 'auth.gates']  // Add 'web' and your custom middleware alias here
+    'middleware' => ['auth', 'auth.gates']  // Add 'web' and your custom middleware alias here
 ], function () {
     Route::redirect('/', '/admin/report')->name('home');
 
@@ -65,10 +65,11 @@ Route::group([
     Route::resource('fund_allocations', FundAllocationController::class);
     Route::resource('invoices', InvoiceController::class);
     Route::post('invoices/{invoice}/cancel', [InvoiceController::class, 'cancel'])
-    ->name('invoices.cancel');
+        ->name('invoices.cancel');
 
     // Invoice List
     Route::get('invoice-list', [InvoiceListController::class, 'index'])->name('invoice-list.index');
+    Route::put('invoice/status/change/{id}', [InvoiceListController::class, 'statusChange'])->name('invoice.status.change');
 });
 
 // Profile / Change Password Routes

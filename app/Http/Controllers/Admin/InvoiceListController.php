@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
+use App\Models\Transactions;
+use Carbon\Carbon;
 
 class InvoiceListController extends Controller
 {
@@ -21,7 +24,33 @@ class InvoiceListController extends Controller
             $query->where('admin_userid', $user_id);
         });
         $data['invoice_list'] = $invoice_list->orderBy('id', 'DESC')->paginate(15);
-// dd($data['invoice_list']);
-        return view('admin.invoice_list.index',$data);
+        return view('admin.invoice_list.index', $data);
+    }
+
+    public function statusChange($invoice_id)
+    {
+        $invoice = Invoice::find($invoice_id);
+
+        if ($invoice) {
+            $invoice->status = 'delivered';
+            $invoice->save();
+        }
+
+        $invoice_items = InvoiceItem::where('invoice_id', $invoice_id)->get();
+        dd($invoice);
+
+        foreach ($invoice as $item) {
+            Transactions::create([
+                'dairy_id' => $item->dairy_id,
+                'fund_allocation_id' => null,
+                'type' => 'hold',
+                'amount' => $item->total_amount,
+                'description' => 'invoice item',
+                'status' => 'completed',
+                'transaction_date' => Carbon::now()
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Invoice status changed successfully.');
     }
 }

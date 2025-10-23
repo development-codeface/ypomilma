@@ -62,10 +62,10 @@
                                             @csrf
                                             @method('PUT')
                                             <button type="submit" class="btn btn-xs btn-warning">
-                                                @if($vendor->status) 
-                                                    <i class="fi fi-br-ban"></i> Deactivate 
-                                                @else 
-                                                    <i class="fi fi-br-check"></i> Activate 
+                                                @if($vendor->status)
+                                                    <i class="fi fi-br-ban"></i> Deactivate
+                                                @else
+                                                    <i class="fi fi-br-check"></i> Activate
                                                 @endif
                                             </button>
                                         </form>

@@ -105,7 +105,7 @@
                                 <td>{{ $invoice->created_at->format('d-m-Y') }}</td>
                                 <td>
                                     @if ($invoice->status !== 'cancelled')
-                                        <form action="{{ route('admin.vendors.toggleStatus', $invoice->id) }}"
+                                        <form action="{{ route('admin.invoice.status.change', $invoice->id) }}"
                                             method="POST" style="display: inline-block;">
                                             @csrf
                                             @method('PUT')
