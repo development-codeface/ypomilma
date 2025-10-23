@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Assets;
 use Illuminate\Http\Request;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
@@ -36,18 +37,28 @@ class InvoiceListController extends Controller
             $invoice->save();
         }
 
-        $invoice_items = InvoiceItem::where('invoice_id', $invoice_id)->get();
-        dd($invoice);
+        Transactions::create([
+            'dairy_id' => $invoice->dairy_id,
+            'fund_allocation_id' => null,
+            'type' => 'hold',
+            'amount' => $invoice->total_amount,
+            'description' => 'invoice item',
+            'status' => 'completed',
+            'transaction_date' => Carbon::now()->format('Y-m-d H:i:s')
+        ]);
 
-        foreach ($invoice as $item) {
-            Transactions::create([
-                'dairy_id' => $item->dairy_id,
-                'fund_allocation_id' => null,
-                'type' => 'hold',
-                'amount' => $item->total_amount,
-                'description' => 'invoice item',
-                'status' => 'completed',
-                'transaction_date' => Carbon::now()
+        $invoice_items = InvoiceItem::with('invoice')->where('invoice_id', $invoice_id)->get();
+
+        foreach ($invoice_items as $item) {
+            Assets::create([
+                'dairy_id' => $item->invoice->dairy_id,
+                'product_id' => $item->product_id,
+                'purchase_value' => $item->total,
+                'purchase_date' => Carbon::now()->format('Y-m-d'),
+                'sold_price' => 0,
+                'discount' => $item->discount,
+                'invoice_refno' => $item->invoice_id,
+                'status' => 'sold',
             ]);
         }
 
