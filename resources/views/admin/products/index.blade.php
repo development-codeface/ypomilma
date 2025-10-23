@@ -42,7 +42,7 @@
                                 —
                             @endif
                         </td> -->
-                        <td>{{ $product->vendor->name }}</td>
+                        <td>{{ $product->vendor->name ?? '-' }}</td>
                         <td>
                              <div class="action-buttons">
                              @can('product_show')
