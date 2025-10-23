@@ -2,48 +2,58 @@
     <nav class="sidebar-nav">
         <ul class="nav">
             <!-- @can('access_report')
+    <li class="nav-item">
+                                <a href="{{ route('admin.report.index') }}"
+                                    class="nav-link {{ request()->is('admin/report') || request()->is('admin/report/*') ? 'active' : '' }}">
+                                    <i class="fi fi-rr-apps nav-icon"></i>
+                                    {{ trans('cruds.report.title') }}
+                                </a>
+                            </li>
+@endcan -->
+
+            <li class="nav-item nav-dropdown">
+                <a class="nav-link  nav-dropdown-toggle" href="#">
+                    <i class="fi fi-br-user-gear nav-icon">
+                    </i>
+                    {{ trans('cruds.userManagement.title') }}
+                </a>
+                <ul class="nav-dropdown-items">
+                    <div style="margin-left:28px;">
+                        @can('permission_access')
+                            <li class="nav-item">
+                                <a href="{{ route('admin.permissions.index') }}"
+                                    class="nav-link {{ request()->is('admin/permissions') || request()->is('admin/permissions/*') ? 'active' : '' }}">
+                                    {{-- <i class="fa-fw fas fa-unlock-alt nav-icon">
+
+                                    </i> --}}
+                                    {{ trans('cruds.permission.title') }}
+                                </a>
+                            </li>
+                        @endcan
+                        @can('role_access')
+                            <li class="nav-item">
+                                <a href="{{ route('admin.roles.index') }}"
+                                    class="nav-link {{ request()->is('admin/roles') || request()->is('admin/roles/*') ? 'active' : '' }}">
+                                    {{-- <i class="fa-fw fas fa-briefcase nav-icon">
+
+                                    </i> --}}
+                                    {{ trans('cruds.role.title') }}
+                                </a>
+                            </li>
+                        @endcan
+                    </div>
+                </ul>
+            </li>
+
+            @can('invoice_access')
                 <li class="nav-item">
-                    <a href="{{ route('admin.report.index') }}"
-                        class="nav-link {{ request()->is('admin/report') || request()->is('admin/report/*') ? 'active' : '' }}">
-                        <i class="fi fi-rr-apps nav-icon"></i>
-                        {{ trans('cruds.report.title') }}
+                    <a href="{{ route('admin.regions.index') }}"
+                        class="nav-link {{ request()->is('admin/regions') || request()->is('admin/regions/*') ? 'active' : '' }}">
+                        <i class="fi fi-br-home-location-alt nav-icon"></i>
+                        {{ trans('cruds.invoice.title') }}
                     </a>
                 </li>
-            @endcan -->
-            
-                <li class="nav-item nav-dropdown">
-                    <a class="nav-link  nav-dropdown-toggle" href="#">
-                        <i class="fi fi-br-user-gear nav-icon">
-                        </i>
-                        {{ trans('cruds.userManagement.title') }}
-                    </a>
-                    <ul class="nav-dropdown-items">
-                        <div style="margin-left:28px;">
-                            @can('permission_access')
-                                <li class="nav-item">
-                                    <a href="{{ route('admin.permissions.index') }}"
-                                        class="nav-link {{ request()->is('admin/permissions') || request()->is('admin/permissions/*') ? 'active' : '' }}">
-                                        {{-- <i class="fa-fw fas fa-unlock-alt nav-icon">
-
-                                    </i> --}}
-                                        {{ trans('cruds.permission.title') }}
-                                    </a>
-                                </li>
-                            @endcan
-                            @can('role_access')
-                                <li class="nav-item">
-                                    <a href="{{ route('admin.roles.index') }}"
-                                        class="nav-link {{ request()->is('admin/roles') || request()->is('admin/roles/*') ? 'active' : '' }}">
-                                        {{-- <i class="fa-fw fas fa-briefcase nav-icon">
-
-                                    </i> --}}
-                                        {{ trans('cruds.role.title') }}
-                                    </a>
-                                </li>
-                            @endcan
-                        </div>
-                    </ul>
-                </li>
+            @endcan
 
             @can('region_access')
                 <li class="nav-item">
@@ -64,7 +74,7 @@
                 </li>
             @endcan
 
-             @can('dairy_access')
+            @can('dairy_access')
                 <li class="nav-item">
                     <a href="{{ route('admin.dairies.index') }}"
                         class="nav-link {{ request()->is('admin/dairies') || request()->is('admin/dairies/*') ? 'active' : '' }}">
@@ -74,7 +84,7 @@
                 </li>
             @endcan
 
-             @can('vendor_access')
+            @can('vendor_access')
                 <li class="nav-item">
                     <a href="{{ route('admin.vendors.index') }}"
                         class="nav-link {{ request()->is('admin/vendors') || request()->is('admin/vendors/*') ? 'active' : '' }}">
@@ -84,7 +94,7 @@
                 </li>
             @endcan
 
-             @can('product_access')
+            @can('product_access')
                 <li class="nav-item">
                     <a href="{{ route('admin.products.index') }}"
                         class="nav-link {{ request()->is('admin/products') || request()->is('admin/products/*') ? 'active' : '' }}">
@@ -93,8 +103,8 @@
                     </a>
                 </li>
             @endcan
-            
-             @can('expensecategory_access')
+
+            @can('expensecategory_access')
                 <li class="nav-item">
                     <a href="{{ route('admin.expense_categories.index') }}"
                         class="nav-link {{ request()->is('admin/expense_categories') || request()->is('admin/expense_categories/*') ? 'active' : '' }}">
@@ -103,17 +113,17 @@
                     </a>
                 </li>
             @endcan
-             @can('fundallocation_access')
+            @can('fundallocation_access')
                 <li class="nav-item">
                     <a href="{{ route('admin.fund_allocations.index') }}"
                         class="nav-link {{ request()->is('admin/fund_allocations') || request()->is('admin/fund_allocations/*') ? 'active' : '' }}">
                         <i class="fi fi-br-box nav-icon"></i>
-                       Fund Allocation
+                        Fund Allocation
                     </a>
                 </li>
             @endcan
-           
-           
+
+
             @if (file_exists(app_path('Http/Controllers/Auth/ChangePasswordController.php')))
                 @can('profile_password_edit')
                     <li class="nav-item">

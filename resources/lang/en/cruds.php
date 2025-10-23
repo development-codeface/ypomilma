@@ -149,7 +149,7 @@ return [
             'name_helper'              => '',
             'status'          => 'Status',
             'district'        => "District",
-             'p_i_unit'        => "P&I Unit",
+            'p_i_unit'        => "P&I Unit",
             'user'            => "On Board User",
             'Participate'     => 'Name Of President',
             'event'           => 'Event',
@@ -395,6 +395,28 @@ return [
             'user_helper'       => '',
         ],
     ],
+
+    'invoice'          => [
+        'title'          => 'Invoice',
+        'title_singular' => 'Invoice',
+        'fields'         => [
+            'id'                   => 'ID',
+            'id_helper'            => '',
+            'asset'                => 'Asset',
+            'asset_helper'         => '',
+            'current_stock'        => 'Current Stock',
+            'current_stock_helper' => '',
+            'created_at'           => 'Created at',
+            'created_at_helper'    => '',
+            'updated_at'           => 'Updated at',
+            'updated_at_helper'    => '',
+            'deleted_at'           => 'Deleted at',
+            'deleted_at_helper'    => '',
+            'team'                 => 'Team',
+            'team_helper'          => '',
+        ],
+    ],
+
     'report'    => [
         'title'          => 'Insights',
     ],
