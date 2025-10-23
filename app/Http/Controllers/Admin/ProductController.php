@@ -35,7 +35,7 @@ class ProductController extends Controller
             'item_code' => 'required|string|max:100',
             'category_id' => 'required|exists:expense_categories,id',
             'description' => 'nullable|string',
-            'vendor_id' => 'required|integer',
+            'vendor_id' => 'nullable|integer',
             'brand' => 'nullable|string|max:255',
             'model' => 'nullable|string|max:255',
             'img' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -69,7 +69,7 @@ class ProductController extends Controller
         $validated = $request->validate([
             'productname' => 'required|string|max:255',
             'description' => 'required|string',
-            'vendor_id' => 'required|integer',
+            'vendor_id' => 'nullable|integer',
             'brand' => 'required|string|max:255',
             'model' => 'required|string|max:255',
             'img' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
