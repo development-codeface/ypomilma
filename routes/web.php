@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\FundAllocationController;
 use App\Http\Controllers\Admin\InvoiceController;
 // Auth/Profile Controllers
 use App\Http\Controllers\Auth\ChangePasswordController;
+use App\Http\Controllers\Admin\InvoiceListController;
 
 Route::redirect('/', '/login');
 
@@ -53,7 +54,7 @@ Route::group([
     Route::delete('regions/destroy', [RegionController::class, 'massDestroy'])->name('regions.massDestroy');
     Route::get('regions/get', [RegionController::class, 'get'])->name('regions.info');
     Route::resource('regions', RegionController::class);
-    
+
     //Vendors
     Route::resource('vendors', VendorController::class);
     Route::put('vendors/{vendor}/toggle-status', [VendorController::class, 'toggleStatus'])->name('vendors.toggleStatus');
@@ -66,7 +67,8 @@ Route::group([
     Route::post('invoices/{invoice}/cancel', [InvoiceController::class, 'cancel'])
     ->name('invoices.cancel');
 
-
+    // Invoice List
+    Route::get('invoice-list', [InvoiceListController::class, 'index'])->name('invoice-list.index');
 });
 
 // Profile / Change Password Routes

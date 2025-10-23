@@ -47,8 +47,8 @@
 
             @can('invoice_access')
                 <li class="nav-item">
-                    <a href="{{ route('admin.regions.index') }}"
-                        class="nav-link {{ request()->is('admin/regions') || request()->is('admin/regions/*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.invoice-list.index') }}"
+                        class="nav-link {{ request()->is('admin/invoice') || request()->is('admin/invoice/*') ? 'active' : '' }}">
                         <i class="fi fi-br-home-location-alt nav-icon"></i>
                         {{ trans('cruds.invoice.title') }}
                     </a>

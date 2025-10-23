@@ -39,4 +39,15 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+     protected function redirectTo()
+    {
+        $user = auth()->user();
+        $role = $user->roles()->pluck('title')->first();
+        if ($role === 'Dairy Adimn') {
+            return route('admin.invoice-list.index'); // reception → event page
+        }
+
+        return route('admin.users.index'); // others → report page
+    }
+
 }
