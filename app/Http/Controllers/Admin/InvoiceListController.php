@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Transactions;
+use App\Models\Vendor;
 use Carbon\Carbon;
 
 class InvoiceListController extends Controller
@@ -17,17 +18,39 @@ class InvoiceListController extends Controller
      *
      * @return void
      */
-    public function index()
+    public function index(Request $request)
     {
+        $data['vendors'] = Vendor::all();
         $invoice_list = Invoice::with(['dairy', 'vendor']);
+        if ($request->vendor_id) {
+            $invoice_list->where('vendor_id', $request->vendor_id);
+        }
+        if ($request->status) {
+            $invoice_list->where('status', $request->status);
+        }
+        if ($request->from_date && $request->to_date) {
+            $invoice_list->whereDate('created_at', '>=', $request->from_date)
+                ->whereDate('created_at', '<=', $request->to_date);
+        } elseif ($request->from_date) {
+            $invoice_list->whereDate('created_at', '>=', $request->from_date);
+        } elseif ($request->to_date) {
+            $invoice_list->whereDate('created_at', '<=', $request->to_date);
+        }
+
         $user_id = auth()->user()->id;
         $invoice_list->whereHas('dairy', function ($query) use ($user_id) {
             $query->where('admin_userid', $user_id);
         });
+
         $data['invoice_list'] = $invoice_list->orderBy('id', 'DESC')->paginate(15);
         return view('admin.invoice_list.index', $data);
     }
 
+    /**
+     * function for status change.
+     *
+     * @return void
+     */
     public function statusChange($invoice_id)
     {
         $invoice = Invoice::find($invoice_id);

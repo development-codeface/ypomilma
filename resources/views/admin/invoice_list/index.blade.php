@@ -1,6 +1,5 @@
 @extends('layouts.admin')
 @section('content')
-
     <div class="card">
         <div class="card-header">
             <p><i class="fi fi-br-list mr_15_icc"></i> Invoices List</p>
@@ -12,31 +11,32 @@
         <div class="card-body">
 
             {{-- 🔍 Filters --}}
-            <form method="GET" action="{{ route('admin.invoices.index') }}" class="mb-4">
+            <form method="GET" action="{{ route('admin.invoice-list.index') }}" class="mb-4">
                 <div class="row g-2 align-items-end">
                     <div class="col-md-3">
                         <label for="vendor_id">Vendor</label>
                         <select name="vendor_id" id="vendor_id" class="form-control">
                             <option value="">All Vendors</option>
-                            {{-- @foreach ($vendors as $vendor) --}}
-                            <option value="">
-                                {{-- {{ $vendor->name }} --}}
-                            </option>
-                            {{-- @endforeach --}}
+                            @foreach ($vendors as $vendor)
+                                <option value=" {{ $vendor->id }}"
+                                    {{ request('vendor_id') == $vendor->id ? 'selected' : '' }}>
+                                    {{ $vendor->name }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
-                    <div class="col-md-3">
+                    {{-- <div class="col-md-3">
                         <label for="dairy_id">Dairy</label>
                         <select name="dairy_id" id="dairy_id" class="form-control">
                             <option value="">All Dairies</option>
-                            {{-- @foreach ($dairies as $dairy) --}}
+                            @foreach ($dairies as $dairy)
                             <option value="">
-                                {{-- {{ $dairy->name }} --}}
+                                {{ $dairy->name }}
                             </option>
-                            {{-- @endforeach --}}
+                            @endforeach
                         </select>
-                    </div>
+                    </div> --}}
 
                     <div class="col-md-2">
                         <label for="status">Status</label>
@@ -62,12 +62,12 @@
                     </div>
 
                     <div class="col-md-12 mt-3 text-end">
-                        <button type="submit" class="btn btn-primary me-2">
-                            <i class="fi fi-br-search"></i> Filter
-                        </button>
-                        <a href="{{ route('admin.invoices.index') }}" class="btn btn-secondary">
-                            <i class="fi fi-br-rotate-left"></i> Reset
-                        </a>
+                            <button type="submit" class="btn btn-primary me-2 filter-btns">
+                                <i class="fi fi-br-search"></i> Filter
+                            </button>
+                            <a href="{{ route('admin.invoice-list.index') }}" class="btn btn-secondary filter-btns">
+                                <i class="fi fi-br-rotate-left"></i> Reset
+                            </a>
                     </div>
                 </div>
             </form>
