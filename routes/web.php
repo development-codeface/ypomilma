@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\InvoiceController;
 // Auth/Profile Controllers
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Admin\InvoiceListController;
+use App\Http\Controllers\Admin\AssetController;
 
 Route::redirect('/', '/login');
 
@@ -70,6 +71,9 @@ Route::group([
     // Invoice List
     Route::get('invoice-list', [InvoiceListController::class, 'index'])->name('invoice-list.index');
     Route::put('invoice/status/change/{id}', [InvoiceListController::class, 'statusChange'])->name('invoice.status.change');
+
+    //Asset Management
+    Route::get('asset-management', [AssetController::class, 'index'])->name('asset-management.index');
 });
 
 // Profile / Change Password Routes

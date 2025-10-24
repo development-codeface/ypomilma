@@ -410,6 +410,21 @@ return [
             'action'               => 'Actions',
         ],
     ],
+    'asset_management'          => [
+        'title'          => 'Asset Management',
+        'title_singular' => 'Asset Management',
+        'fields'         => [
+            'id'                   => 'ID',
+            'id_helper'            => '',
+            'diary'                => 'Dairy',
+            'product'              => 'Product',
+            'quantity'             => 'Quantity',
+            'status'               => 'Status',
+            'purchase_rate'        => 'Purchase Rate',
+            'purchase_date'        => 'Purchase Date',
+            'action'               => 'Actions',
+        ],
+    ],
 
     'report'    => [
         'title'          => 'Insights',

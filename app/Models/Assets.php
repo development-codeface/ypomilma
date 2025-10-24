@@ -18,4 +18,14 @@ class Assets extends Model
         'invoice_refno',
         'status',
     ];
+
+    public function dairy()
+    {
+        return $this->belongsTo(Dairy::class, 'dairy_id');
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
 }

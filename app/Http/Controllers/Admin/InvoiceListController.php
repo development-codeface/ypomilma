@@ -22,12 +22,15 @@ class InvoiceListController extends Controller
     {
         $data['vendors'] = Vendor::all();
         $invoice_list = Invoice::with(['dairy', 'vendor']);
+
         if ($request->vendor_id) {
             $invoice_list->where('vendor_id', $request->vendor_id);
         }
+
         if ($request->status) {
             $invoice_list->where('status', $request->status);
         }
+
         if ($request->from_date && $request->to_date) {
             $invoice_list->whereDate('created_at', '>=', $request->from_date)
                 ->whereDate('created_at', '<=', $request->to_date);

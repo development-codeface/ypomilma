@@ -3,12 +3,12 @@
         <ul class="nav">
             <!-- @can('access_report')
     <li class="nav-item">
-                                    <a href="{{ route('admin.report.index') }}"
-                                        class="nav-link {{ request()->is('admin/report') || request()->is('admin/report/*') ? 'active' : '' }}">
-                                        <i class="fi fi-rr-apps nav-icon"></i>
-                                        {{ trans('cruds.report.title') }}
-                                    </a>
-                                </li>
+                                        <a href="{{ route('admin.report.index') }}"
+                                            class="nav-link {{ request()->is('admin/report') || request()->is('admin/report/*') ? 'active' : '' }}">
+                                            <i class="fi fi-rr-apps nav-icon"></i>
+                                            {{ trans('cruds.report.title') }}
+                                        </a>
+                                    </li>
 @endcan -->
             @can('user_manage_access')
                 <li class="nav-item nav-dropdown">
@@ -51,6 +51,15 @@
                         class="nav-link {{ request()->is('admin/invoice') || request()->is('admin/invoice/*') ? 'active' : '' }}">
                         <i class="fi fi-br-home-location-alt nav-icon"></i>
                         {{ trans('cruds.invoice.title') }}
+                    </a>
+                </li>
+            @endcan
+            @can('asset_access')
+                <li class="nav-item">
+                    <a href="{{ route('admin.asset-management.index') }}"
+                        class="nav-link {{ request()->is('admin/asset') || request()->is('admin/asset/*') ? 'active' : '' }}">
+                        <i class="fi fi-br-home-location-alt nav-icon"></i>
+                        {{ trans('cruds.asset_management.title') }}
                     </a>
                 </li>
             @endcan
