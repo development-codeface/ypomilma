@@ -52,6 +52,7 @@ class InvoiceListController extends Controller
         foreach ($invoice_items as $item) {
             Assets::create([
                 'dairy_id' => $item->invoice->dairy_id,
+                'quantity' => $item->quantity,
                 'product_id' => $item->product_id,
                 'purchase_value' => $item->total,
                 'purchase_date' => Carbon::now()->format('Y-m-d'),

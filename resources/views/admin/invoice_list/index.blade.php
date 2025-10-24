@@ -109,7 +109,8 @@
                                             method="POST" style="display: inline-block;">
                                             @csrf
                                             @method('PUT')
-                                            <button type="submit" class="btn btn-xs btn-warning">
+                                            <button type="submit" class="btn btn-xs btn-warning"
+                                                @if ($invoice->status == 'delivered') disabled @endif>
                                                 @if ($invoice->status == 'approved')
                                                     <i class="fi fi-br-ban"></i> Approved
                                                 @elseif($invoice->status == 'delivered')

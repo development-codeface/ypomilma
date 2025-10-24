@@ -14,6 +14,7 @@ class Assets extends Model
         'purchase_date',
         'sold_price',
         'discount',
+        'quantity',
         'invoice_refno',
         'status',
     ];
