@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\FundAllocation;
 use App\Models\Dairy;
+use App\Models\Transactions;
+use App\Models\Account;
 use Illuminate\Http\Request;
 use Gate;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\DB;
 
 class FundAllocationController extends Controller
 {
@@ -55,17 +58,43 @@ class FundAllocationController extends Controller
             'amount' => 'required|numeric',
             'allocation_date' => 'required|date',
             'financial_year' => 'required|string',
-           // 'status' => 'required|in:approved,pending,rejected',
+            'remarks' => 'nullable|string',
         ]);
 
-            FundAllocation::create([
-            'dairy_id' => $request->dairy_id,
-            'amount' => $request->amount,
-            'allocation_date' => $request->allocation_date,
-            'financial_year' => $request->financial_year,
-            'remarks' => $request->remarks,
-            'status' => 'approved', 
-        ]);
+        DB::transaction(function () use ($request) {
+            // 1️⃣ Create Fund Allocation
+            $fund = FundAllocation::create([
+                'dairy_id' => $request->dairy_id,
+                'amount' => $request->amount,
+                'allocation_date' => $request->allocation_date,
+                'financial_year' => $request->financial_year,
+                'remarks' => $request->remarks,
+                'status' => 'approved',
+            ]);
+
+            // 2️⃣ Create Transaction Entry
+            Transactions::create([
+                'dairy_id' => $request->dairy_id,
+                'type' => 'credit',
+                'amount' => $request->amount,
+                'description' => 'Fund allocation received',
+                'reference_id' => $fund->id,
+                'transaction_date' => $request->allocation_date,
+            ]);
+
+            // 3️⃣ Update or Create Account Record
+            $account = Account::firstOrNew([
+                'dairy_id' => $request->dairy_id,
+            ]);
+
+            if ($account->exists) {
+                $account->main_balance += $request->amount;
+            } else {
+                $account->main_balance = $request->amount;
+            }
+
+            $account->save();
+        });
 
         return redirect()->route('admin.fund_allocations.index')
             ->with('success', 'Fund allocation created successfully.');

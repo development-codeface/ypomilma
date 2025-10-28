@@ -59,7 +59,7 @@
                     @foreach($invoice->items as $index => $item)
                         <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td>{{ $item->product->name ?? $item->product_name }}</td>
+                            <td>{{ $item->product->productname }}</td>
                             <td>{{ $item->quantity }}</td>
                             <td>{{ number_format($item->unit_price, 2) }}</td>
                             <td>{{ $item->gst_percent }}%</td>
