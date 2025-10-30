@@ -77,6 +77,7 @@ class InvoiceListController extends Controller
 
         foreach ($invoice_items as $item) {
             Assets::create([
+                'invoice_items_id' => $item->id,
                 'dairy_id' => $item->invoice->dairy_id,
                 'quantity' => $item->quantity,
                 'product_id' => $item->product_id,

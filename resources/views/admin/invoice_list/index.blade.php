@@ -9,7 +9,6 @@
         </div>
 
         <div class="card-body">
-
             {{-- 🔍 Filters --}}
             <form method="GET" action="{{ route('admin.invoice-list.index') }}" class="mb-4">
                 <div class="row g-2 align-items-end">
@@ -62,12 +61,12 @@
                     </div>
 
                     <div class="col-md-12 mt-3 text-end">
-                            <button type="submit" class="btn btn-primary me-2 filter-btns">
-                                <i class="fi fi-br-search"></i> Filter
-                            </button>
-                            <a href="{{ route('admin.invoice-list.index') }}" class="btn btn-secondary filter-btns">
-                                <i class="fi fi-br-rotate-left"></i> Reset
-                            </a>
+                        <button type="submit" class="btn btn-primary me-2 filter-btns">
+                            <i class="fi fi-br-search"></i> Filter
+                        </button>
+                        <a href="{{ route('admin.invoice-list.index') }}" class="btn btn-secondary filter-btns">
+                            <i class="fi fi-br-rotate-left"></i> Reset
+                        </a>
                     </div>
                 </div>
             </form>

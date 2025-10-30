@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\InvoiceItem;
 
 class Assets extends Model
 {
     protected $fillable = [
         'id',
+        'invoice_items_id',
         'dairy_id',
         'product_id',
         'purchase_value',
@@ -27,5 +29,10 @@ class Assets extends Model
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    public function invoiceItem()
+    {
+        return $this->belongsTo(InvoiceItem::class, 'invoice_items_id');
     }
 }

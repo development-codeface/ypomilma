@@ -37,81 +37,81 @@ class InvoiceController extends Controller
 
     public function create()
     {
-        $dairies = Dairy::select('id', 'name')->get(); 
+        $dairies = Dairy::select('id', 'name')->get();
         $vendors = Vendor::select('id', 'name')->get();
         $products = Product::all();
-        return view('admin.invoices.create', compact('dairies', 'vendors','products'));
+        return view('admin.invoices.create', compact('dairies', 'vendors', 'products'));
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'dairy_id' => 'required|exists:dairies,id',
-        'vendor_id' => 'nullable|exists:vendors,id',
-        'discount' => 'nullable|numeric',
-        'items.*.product_id' => 'required|exists:products,id',
-        'items.*.tax_type' => 'required|in:inclusive,exclusive',
-    ]);
-
-        DB::transaction(function () use ($request) {
-        $lastInvoice = Invoice::lockForUpdate()->orderBy('id', 'desc')->first();
-        $num = $lastInvoice ? (int) substr($lastInvoice->id, 3) + 1 : 1;
-        $invoiceId = 'INV' . str_pad($num, 5, '0', STR_PAD_LEFT);
-
-        $invoice = Invoice::create([
-            'id' => $invoiceId,
-            'dairy_id' => $request->dairy_id,
-            'vendor_id' => $request->vendor_id,
-            'discount' => $request->discount ?? 0,
-            'total_amount' => 0,
-            'status' => 'approved',
+    {
+        $request->validate([
+            'dairy_id' => 'required|exists:dairies,id',
+            'vendor_id' => 'nullable|exists:vendors,id',
+            'discount' => 'nullable|numeric',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.tax_type' => 'required|in:inclusive,exclusive',
         ]);
 
-        $grandTotal = 0;
+        DB::transaction(function () use ($request) {
+            $lastInvoice = Invoice::lockForUpdate()->orderBy('id', 'desc')->first();
+            $num = $lastInvoice ? (int) substr($lastInvoice->id, 3) + 1 : 1;
+            $invoiceId = 'INV' . str_pad($num, 5, '0', STR_PAD_LEFT);
 
-        foreach ($request->items as $item) {
-            $quantity = $item['quantity'];
-            $unitPrice = $item['unit_price'];
-            $discount = $item['discount'] ?? 0;
-            $gstPercent = $item['gst_percent'];
-            $taxType = $item['tax_type'];
-
-            $baseValue = ($unitPrice * $quantity) - $discount;
-            $gstAmount = 0;
-            $itemTotal = 0;
-            $taxableValue = 0;
-
-            if ($taxType === 'inclusive') {
-                $taxableValue = $baseValue / (1 + $gstPercent / 100);
-                $gstAmount = $baseValue - $taxableValue;
-                $itemTotal = $baseValue;
-            } else {
-                $taxableValue = $baseValue;
-                $gstAmount = $baseValue * ($gstPercent / 100);
-                $itemTotal = $taxableValue + $gstAmount;
-            }
-
-            InvoiceItem::create([
-                'invoice_id' => $invoice->id,
-                'product_id' => $item['product_id'],
-                'quantity' => $quantity,
-                'unit_price' => $unitPrice,
-                'gst_percent' => $gstPercent,
-                'tax_type' => $taxType,
-                'gst_amount' => $gstAmount,
-                'discount' => $discount,
-                'taxable_value' => $taxableValue,
-                'total' => $itemTotal,
+            $invoice = Invoice::create([
+                'id' => $invoiceId,
+                'dairy_id' => $request->dairy_id,
+                'vendor_id' => $request->vendor_id,
+                'discount' => $request->discount ?? 0,
+                'total_amount' => 0,
+                'status' => 'approved',
             ]);
 
-            $grandTotal += $itemTotal;
-        }
+            $grandTotal = 0;
 
-        $invoice->update(['total_amount' => $grandTotal - $invoice->discount]);
-    });
+            foreach ($request->items as $item) {
+                $quantity = $item['quantity'];
+                $unitPrice = $item['unit_price'];
+                $discount = $item['discount'] ?? 0;
+                $gstPercent = $item['gst_percent'];
+                $taxType = $item['tax_type'];
 
-    return redirect()->route('admin.invoices.index')->with('success', 'Invoice created successfully');
-}
+                $baseValue = ($unitPrice * $quantity) - $discount;
+                $gstAmount = 0;
+                $itemTotal = 0;
+                $taxableValue = 0;
+
+                if ($taxType === 'inclusive') {
+                    $taxableValue = $baseValue / (1 + $gstPercent / 100);
+                    $gstAmount = $baseValue - $taxableValue;
+                    $itemTotal = $baseValue;
+                } else {
+                    $taxableValue = $baseValue;
+                    $gstAmount = $baseValue * ($gstPercent / 100);
+                    $itemTotal = $taxableValue + $gstAmount;
+                }
+
+                InvoiceItem::create([
+                    'invoice_id' => $invoice->id,
+                    'product_id' => $item['product_id'],
+                    'quantity' => $quantity,
+                    'unit_price' => $unitPrice,
+                    'gst_percent' => $gstPercent,
+                    'tax_type' => $taxType,
+                    'gst_amount' => $gstAmount,
+                    'discount' => $discount,
+                    'taxable_value' => $taxableValue,
+                    'total' => $itemTotal,
+                ]);
+
+                $grandTotal += $itemTotal;
+            }
+
+            $invoice->update(['total_amount' => $grandTotal - $invoice->discount]);
+        });
+
+        return redirect()->route('admin.invoices.index')->with('success', 'Invoice created successfully');
+    }
 
     public function show(Invoice $invoice)
     {
@@ -150,5 +150,4 @@ class InvoiceController extends Controller
         return redirect()->route('admin.invoices.index')
             ->with('success', 'Invoice has been cancelled successfully.');
     }
-
 }

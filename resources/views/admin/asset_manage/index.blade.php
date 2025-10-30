@@ -3,13 +3,18 @@
     <div class="card">
         <div class="card-header">
             <p><i class="fi fi-br-list mr_15_icc"></i> Invoices List</p>
-            {{-- <a href="{{ route('admin.invoices.create') }}" class="btn btn-success">
-            <i class="fi fi-br-plus-small mr_5"></i> Add Invoice
-        </a> --}}
+            <a href="{{ route('admin.asset-management.create') }}" class="btn btn-success">
+                <i class="fi fi-br-plus-small mr_5"></i> Add
+            </a>
         </div>
 
         <div class="card-body">
-
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
             {{-- 🔍 Filters --}}
             <form method="GET" action="{{ route('admin.asset-management.index') }}" class="mb-4">
                 <div class="row g-2 align-items-end">
@@ -48,7 +53,8 @@
                             </option>
                             <option value="damaged" {{ request('status') == 'damaged' ? 'selected' : '' }}>Damaged
                             </option>
-                            <option value="maintenance" {{ request('status') == 'maintenance' ? 'selected' : '' }}>Maintenance
+                            <option value="maintenance" {{ request('status') == 'maintenance' ? 'selected' : '' }}>
+                                Maintenance
                             </option>
                         </select>
                     </div>
@@ -86,7 +92,7 @@
                             <th>{{ trans('cruds.asset_management.fields.purchase_rate') }}</th>
                             <th>{{ trans('cruds.asset_management.fields.purchase_date') }}</th>
                             <th>{{ trans('cruds.asset_management.fields.status') }}</th>
-                            <th>{{ trans('cruds.asset_management.fields.action') }}</th>
+                            {{-- <th>{{ trans('cruds.asset_management.fields.action') }}</th> --}}
                         </tr>
                     </thead>
                     <tbody>
@@ -112,11 +118,11 @@
                                         <span class="badge bg-danger">maintenance</span>
                                     @endif
                                 </td>
-                                <td>
+                                {{-- <td>
                                     <button type="submit" class="btn btn-xs btn-warning">
                                         Add
                                     </button>
-                                </td>
+                                </td> --}}
                             </tr>
                         @empty
                             <tr>

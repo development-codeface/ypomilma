@@ -74,6 +74,10 @@ Route::group([
 
     //Asset Management
     Route::get('asset-management', [AssetController::class, 'index'])->name('asset-management.index');
+    Route::get('asset-management/create', [AssetController::class, 'create'])->name('asset-management.create');
+    Route::get('get-asset-details/{assetId}', [AssetController::class, 'getAssetDetails'])->name('get-asset-details');
+    Route::post('asset-management/invoice/store', [AssetController::class, 'store'])->name('asset-management.invoice.store');
+
 });
 
 // Profile / Change Password Routes

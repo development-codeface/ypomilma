@@ -424,6 +424,21 @@ return [
             'purchase_date'        => 'Purchase Date',
             'action'               => 'Actions',
         ],
+        'form_fields' => [
+            'name'        => 'Name',
+            'name_helper' => '',
+            'address'     => 'Address',
+            'address_helper' => '',
+            'contact_no'  => 'Contact No',
+            'contact_no_helper' => '',
+            'discount'    => 'Discount',
+            'discount_helper' => '',
+            'price'       => 'Price',
+            'price_helper' => '',
+            'quantity'    => 'Quantity',
+            'quantity_helper' => '',
+            'total'       => 'Total',
+        ]
     ],
 
     'report'    => [
