@@ -15,6 +15,43 @@
     </div>
 
     <div class="card-body">
+
+     {{-- Filter Form --}}
+        <form method="GET" action="{{ route('admin.products.index') }}" class="mb-3">
+            <div class="row g-2 align-items-end">
+
+                {{-- Category Filter --}}
+                <div class="col-md-4">
+                    <label>Category</label>
+                    <select name="category" class="form-control" onchange="this.form.submit()">
+                        <option value="">All Categories</option>
+                        @foreach ($categories as $id => $name)
+                            <option value="{{ $name }}" {{ request('category') == $name ? 'selected' : '' }}>
+                                {{ $name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Vendor Filter --}}
+                <div class="col-md-4">
+                    <label>Vendor</label>
+                    <select name="vendor" class="form-control" onchange="this.form.submit()">
+                        <option value="">All Vendors</option>
+                        @foreach ($vendors as $id => $name)
+                            <option value="{{ $name }}" {{ request('vendor') == $name ? 'selected' : '' }}>
+                                {{ $name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary w-100">Reset</a>
+                </div>
+            </div>
+        </form>
+
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>

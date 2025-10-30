@@ -28,6 +28,10 @@ class InvoiceController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $query->whereBetween('created_at', [$request->from_date, $request->to_date]);
+        }
+
         $invoices = $query->latest()->paginate(10);
         $dairies = Dairy::all();
         $vendors = Vendor::all();

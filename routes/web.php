@@ -14,6 +14,9 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ExpenseCategoryController;
 use App\Http\Controllers\Admin\FundAllocationController;
 use App\Http\Controllers\Admin\InvoiceController;
+use App\Http\Controllers\Admin\ExpenseItemController;
+use App\Http\Controllers\Admin\ExpenseController;
+use App\Http\Controllers\Admin\TransactionReportController;
 // Auth/Profile Controllers
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Admin\InvoiceListController;
@@ -65,6 +68,7 @@ Route::group([
     Route::resource('expense_categories', ExpenseCategoryController::class);
     Route::resource('fund_allocations', FundAllocationController::class);
     Route::resource('invoices', InvoiceController::class);
+    Route::resource('expenseitems', ExpenseItemController::class);
     Route::post('invoices/{invoice}/cancel', [InvoiceController::class, 'cancel'])
         ->name('invoices.cancel');
 
@@ -72,11 +76,18 @@ Route::group([
     Route::get('invoice-list', [InvoiceListController::class, 'index'])->name('invoice-list.index');
     Route::put('invoice/status/change/{id}', [InvoiceListController::class, 'statusChange'])->name('invoice.status.change');
 
+
     //Asset Management
     Route::get('asset-management', [AssetController::class, 'index'])->name('asset-management.index');
     Route::get('asset-management/create', [AssetController::class, 'create'])->name('asset-management.create');
     Route::get('get-asset-details/{assetId}', [AssetController::class, 'getAssetDetails'])->name('get-asset-details');
     Route::post('asset-management/invoice/store', [AssetController::class, 'store'])->name('asset-management.invoice.store');
+
+    Route::resource('expenses', ExpenseController::class);
+    Route::get('expenses/items/{categoryId}', [ExpenseController::class, 'getItemsByCategory'])->name('expenses.items');
+    Route::get('/transactions', [TransactionReportController::class, 'index'])->name('transactions.index');
+    Route::get('/transactions/export', [TransactionReportController::class, 'export'])->name('transactions.export');
+
 
 });
 

@@ -12,11 +12,32 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('product_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $products = Product::latest()->paginate(10);
-        return view('admin.products.index', compact('products'));
+        
+        $categoryFilter = $request->input('category');
+        $vendorFilter   = $request->input('vendor');
+
+        $products = Product::with(['category', 'vendor'])
+            ->when($categoryFilter, function ($query, $categoryFilter) {
+                $query->whereHas('category', function ($subQuery) use ($categoryFilter) {
+                    $subQuery->where('name', 'like', '%' . $categoryFilter . '%');
+                });
+            })
+            ->when($vendorFilter, function ($query, $vendorFilter) {
+                $query->whereHas('vendor', function ($subQuery) use ($vendorFilter) {
+                    $subQuery->where('name', 'like', '%' . $vendorFilter . '%');
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        $categories = ExpenseCategory::pluck('name', 'id');
+        $vendors = \App\Models\Vendor::pluck('name', 'id');
+       // $products = Product::latest()->paginate(10);
+        return view('admin.products.index', compact('products','vendors', 'vendorFilter','categories', 'categoryFilter'));
     }
 
     public function create()
