@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\ExpenseItemController;
 use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\TransactionReportController;
+use App\Http\Controllers\Admin\DashboardController;
 // Auth/Profile Controllers
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Admin\InvoiceListController;
@@ -37,8 +38,10 @@ Route::group([
     Route::delete('permissions/destroy', [PermissionsController::class, 'massDestroy'])->name('permissions.massDestroy');
     Route::resource('permissions', PermissionsController::class);
 
-    // Report/Dashboard
-    Route::resource('report', ReportController::class);
+    //Dashboard
+    Route::get('dashboard', [DashboardController::class, 'index'])
+    ->name('dashboard');
+
 
     // Roles
     Route::delete('roles/destroy', [RolesController::class, 'massDestroy'])->name('roles.massDestroy');
@@ -61,7 +64,6 @@ Route::group([
     //Vendors
     Route::resource('vendors', VendorController::class);
     Route::put('vendors/{vendor}/toggle-status', [VendorController::class, 'toggleStatus'])->name('vendors.toggleStatus');
-
     Route::resource('dairies', DairyController::class);
     Route::resource('products', ProductController::class);
     Route::resource('expense_categories', ExpenseCategoryController::class);

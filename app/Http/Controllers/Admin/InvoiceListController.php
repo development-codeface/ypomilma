@@ -32,6 +32,22 @@ class InvoiceListController extends Controller
     {
         $invoice = Invoice::find($invoice_id);
 
+        // ✅ Fetch the dairy's account
+        $account = \App\Models\Account::where('dairy_id', $invoice->dairy_id)->first();
+
+        if (!$account) {
+            return redirect()->back()->with('error', 'No account found for this dairy.');
+        }
+
+        $amount = $invoice->total_amount;
+
+        if ($account->main_balance < $amount) {
+            return redirect()->back()->with('error', 'Insufficient main balance to record this transaction.');
+        }
+
+        $account->main_balance -= $amount;
+        $account->save();
+
         if ($invoice) {
             $invoice->status = 'delivered';
             $invoice->save();
