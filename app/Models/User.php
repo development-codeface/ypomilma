@@ -93,4 +93,9 @@ class User extends Authenticatable
 
     }
 
+    public function getRoleNameAttribute()
+    {
+        return optional($this->roles->first())->title;
+    }
+
 }

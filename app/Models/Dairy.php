@@ -28,4 +28,15 @@ class Dairy extends Model
         return $this->belongsTo(User::class, 'admin_userid');
     }
 
+    public function fundAllocations()
+    {
+        return $this->hasMany(FundAllocation::class, 'dairy_id');
+    }
+
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class, 'dairy_id');
+    }
+
+
 }
