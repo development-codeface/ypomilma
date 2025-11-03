@@ -43,7 +43,6 @@ Route::group([
     Route::get('dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
 
-
     // Roles
     Route::delete('roles/destroy', [RolesController::class, 'massDestroy'])->name('roles.massDestroy');
     Route::resource('roles', RolesController::class);
@@ -89,8 +88,6 @@ Route::group([
     Route::get('expenses/items/{categoryId}', [ExpenseController::class, 'getItemsByCategory'])->name('expenses.items');
     Route::get('/transactions', [TransactionReportController::class, 'index'])->name('transactions.index');
     Route::get('/transactions/export', [TransactionReportController::class, 'export'])->name('transactions.export');
-
-
 });
 
 // Profile / Change Password Routes

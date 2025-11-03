@@ -44,7 +44,7 @@ class LoginController extends Controller
         $user = auth()->user();
         $role = $user->roles()->pluck('title')->first();
         if ($role === 'Dairy Adimn') {
-            return route('admin.invoice-list.index'); // reception → event page
+            return route('admin.dashboard'); // reception → event page
         }
 
         return route('admin.users.index'); // others → report page
