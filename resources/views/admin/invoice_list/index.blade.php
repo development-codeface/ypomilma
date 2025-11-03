@@ -93,8 +93,8 @@
                                 <td>{{ $invoice->vendor->name ?? 'N/A' }}</td>
                                 <td>{{ $invoice->total_amount ?? 'N/A' }}</td>
                                 <td>
-                                    @if ($invoice->status == 'approved')
-                                        <span class="badge bg-success">Approved</span>
+                                    @if ($invoice->status == 'pending')
+                                        <span class="badge bg-success">pending</span>
                                     @elseif($invoice->status == 'delivered')
                                         <span class="badge bg-info">Delivered</span>
                                     @else
