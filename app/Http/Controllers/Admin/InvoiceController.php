@@ -68,7 +68,7 @@ class InvoiceController extends Controller
                 'vendor_id' => $request->vendor_id,
                 'discount' => $request->discount ?? 0,
                 'total_amount' => 0,
-                'status' => 'approved',
+                'status' => 'pending',
             ]);
 
             $grandTotal = 0;
