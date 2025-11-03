@@ -99,6 +99,8 @@ class AssetController extends Controller
 
         $data = $request->all();
         $items = $request->items;
+        $user_id = auth()->user()->id;
+        $dairy_id = Dairy::where('admin_userid', $user_id)->pluck('id')->first();
         foreach ($items as $index => $item) {
             $asset = Assets::find($item['asset_id']);
 
@@ -117,7 +119,7 @@ class AssetController extends Controller
             }
         }
 
-        $this->assetManage->AssetStore($data, $items);
+        $this->assetManage->AssetStore($data, $items,$dairy_id);
         return redirect()->route('admin.asset-management.index')->with('success', 'Agency Invoice created successfully.');
     }
 }
