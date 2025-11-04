@@ -47,7 +47,7 @@ class LoginController extends Controller
             return route('admin.dashboard'); // reception → event page
         }
 
-        return route('admin.users.index'); // others → report page
+        return route('admin.dashboard'); // others → report page
     }
 
 }

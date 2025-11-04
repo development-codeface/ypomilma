@@ -16,8 +16,7 @@ class ExpenseItemController extends Controller
     {
         abort_if(Gate::denies('expenseitem_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        // Get filter input from query string (e.g. ?category=Office)
-        $categoryFilter = $request->input('category');
+      $categoryFilter = $request->input('category');
 
         $expenseItems = ExpenseItem::with(['category'])
             ->when($categoryFilter, function ($query, $categoryFilter) {
@@ -27,9 +26,9 @@ class ExpenseItemController extends Controller
             })
             ->latest()
             ->paginate(10)
-            ->withQueryString(); // Keep filters when paginating
+            ->withQueryString(); 
 
-        // For dropdown filter in the view
+        
         $categories = ExpenseCategory::pluck('name', 'id');
 
         return view('admin.expenseitems.index', compact('expenseItems', 'categories', 'categoryFilter'));

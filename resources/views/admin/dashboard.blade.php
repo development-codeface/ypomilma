@@ -51,13 +51,23 @@
                         <h5 class="mt-4">Details for {{ $dairies->firstWhere('id', $selectedDairyId)->name }}</h5>
                         <div class="row mt-3 text-center">
                             <div class="col-md-4">
+                                <div class="p-3 bg-light rounded shadow-sm">
                                 <h6>Allocated Fund</h6>
                                 <p class="fs-20 text-success">₹ {{ number_format($dairyData['fund_allocated'], 2) }}</p>
+                                </div>
                             </div>
                             <div class="col-md-4">
+                                <div class="p-3 bg-light rounded shadow-sm">
                                 <h6>Expenses</h6>
                                 <p class="fs-20 text-danger">₹ {{ number_format($dairyData['expenses'], 2) }}</p>
+                                </div>
                             </div>
+                             <div class="col-md-4">
+                            <div class="p-3 bg-light rounded shadow-sm">
+                                <h5>Remaining Balance</h5>
+                                <h2 class="text-primary">₹ {{ number_format($dairyData['fund_allocated'] - $dairyData['expenses'], 2) }}</h2>
+                            </div>
+                        </div>
                         </div>
                     @endif
                     <hr>

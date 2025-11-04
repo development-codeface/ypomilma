@@ -10,12 +10,12 @@ use Illuminate\Support\Facades\DB;
 
 class ExpenseController extends Controller
 {
-    // Show list
+   
     public function index(Request $request)
     {
         $user = auth()->user();
 
-         $roleName = strtolower($user->role_name); // "superadmin", "admin", etc.
+         $roleName = strtolower($user->role_name);
        
         $query = \App\Models\Expense::with(['dairy', 'category'])->latest();
 
@@ -52,8 +52,7 @@ class ExpenseController extends Controller
     }
 
 
-    // Show form
-    public function create()
+   public function create()
     {
         $categories = DB::table('expense_categories')->pluck('name', 'id');
         return view('admin.expenses.create', compact('categories'));
@@ -75,8 +74,7 @@ class ExpenseController extends Controller
         return response()->json($merged);
     }
 
-    // Store expense
-   public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'expensecategory_id' => 'required',
@@ -138,14 +136,14 @@ class ExpenseController extends Controller
     }
 
 
-    // Edit
+    
     public function edit(Expense $expense)
     {
         $categories = DB::table('expense_categories')->pluck('name', 'id');
         return view('admin.expenses.edit', compact('expense', 'categories'));
     }
 
-    // Update
+   
     public function update(Request $request, Expense $expense)
     {
         $request->validate([
@@ -161,13 +159,13 @@ class ExpenseController extends Controller
         return redirect()->route('admin.expenses.index')->with('success', 'Expense updated successfully.');
     }
 
-    // Show single expense
+    
     public function show(Expense $expense)
     {
         return view('admin.expenses.show', compact('expense'));
     }
 
-    // Delete
+  
     public function destroy(Expense $expense)
     {
         $expense->delete();

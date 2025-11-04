@@ -57,7 +57,7 @@
                 </div>
 
                 {{-- Buttons --}}
-                <div class="form-group col-md-4 d-flex">
+                <div class="form-group col-md-4">
                     <button type="submit" class="btn btn-primary mr-2">
                         <i class="fi fi-br-filter mr_5"></i> Filter
                     </button>

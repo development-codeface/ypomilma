@@ -105,7 +105,7 @@
                                     <i class="fi fi-br-eye"></i>
                                 </a>
 
-                                @if($invoice->status !== 'cancelled')
+                                @if($invoice->status === 'pending')
                                     <form action="{{ route('admin.invoices.cancel', $invoice->id) }}" 
                                           method="POST" style="display:inline-block">
                                         @csrf
