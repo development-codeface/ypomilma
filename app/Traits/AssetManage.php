@@ -27,7 +27,7 @@ class AssetManage
         ]);
 
         $account = Account::where('dairy_id', $dairy_id)->first();
-        $account->main_balance = $account->main_balance - $total_amount;
+        $account->main_balance = $account->main_balance + $total_amount;
         $account->save();
 
         foreach ($items as $item) {

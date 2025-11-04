@@ -102,7 +102,8 @@ class AssetController extends Controller
         $user_id = auth()->user()->id;
         $dairy_id = Dairy::where('admin_userid', $user_id)->pluck('id')->first();
         foreach ($items as $index => $item) {
-            $asset = Assets::find($item['asset_id']);
+            $asset = Assets::with('product')->find($item['asset_id']);
+            // dd($asset);
 
             if (!$asset) {
                 return redirect()->back()
@@ -113,13 +114,13 @@ class AssetController extends Controller
             if ($item['quantity'] > $asset->quantity) {
                 return redirect()->back()
                     ->withErrors([
-                        "quantity" => "Requested quantity ({$item['quantity']}) exceeds available stock ({$asset->quantity})."
+                        "quantity" => "Requested ({$asset->product->productname}) quantity ({$item['quantity']}) exceeds available stock ({$asset->quantity})."
                     ])
                     ->withInput();
             }
         }
 
-        $this->assetManage->AssetStore($data, $items,$dairy_id);
+        $this->assetManage->AssetStore($data, $items, $dairy_id);
         return redirect()->route('admin.asset-management.index')->with('success', 'Agency Invoice created successfully.');
     }
 }
