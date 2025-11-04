@@ -4,11 +4,11 @@
         <div class="card-header">
             <p><i class="fi fi-br-plus-small mr_15_icc"></i> Create Invoice</p>
         </div>
-
+        {{-- {{ route('admin.asset-management.invoice.store') }} --}}
         <div class="card-body col-md-12">
-            <form method="POST" action="{{ route('admin.asset-management.invoice.store') }}" enctype="multipart/form-data">
+            <form method="POST" id="invoiceForm" action="" enctype="multipart/form-data">
                 @csrf
-                @if ($errors->has('items'))
+                {{-- @if ($errors->has('items'))
                     <div class="invalid-feedback">
                         {{ $errors->first('items') }}
                     </div>
@@ -17,45 +17,45 @@
                     <div class="invalid-feedback">
                         {{ $errors->first('quantity') }}
                     </div>
-                @endif
+                @endif --}}
                 <div class="row">
                     {{-- Dairy --}}
                     <div class="form-group">
                         <label class="required"
                             for="name">{{ trans('cruds.asset_management.form_fields.name') }}</label>
-                        <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text"
+                        <input class="form-control " type="text"
                             name="name" id="name" value="{{ old('name', '') }}">
-                        @if ($errors->has('name'))
+                        {{-- @if ($errors->has('name'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('name') }}
                             </div>
-                        @endif
-                        <span class="help-block">{{ trans('cruds.asset_management.form_fields.name_helper') }}</span>
+                        @endif --}}
+                        {{-- <span class="help-block">{{ trans('cruds.asset_management.form_fields.name_helper') }}</span> --}}
                     </div>
 
                     <div class="form-group">
                         <label class="required"
                             for="address">{{ trans('cruds.asset_management.form_fields.address') }}</label>
-                        <textarea class="form-control {{ $errors->has('address') ? 'is-invalid' : '' }}" name="address" id="address"
+                        <textarea class="form-control " name="address" id="address"
                             rows="3">{{ old('address', '') }}</textarea>
-                        @if ($errors->has('address'))
+                        {{-- @if ($errors->has('address'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('address') }}
                             </div>
-                        @endif
-                        <span class="help-block">{{ trans('cruds.asset_management.form_fields.address_helper') }}</span>
+                        @endif --}}
+                        {{-- <span class="help-block">{{ trans('cruds.asset_management.form_fields.address_helper') }}</span> --}}
                     </div>
                     <div class="form-group">
                         <label class="required"
                             for="contact_no">{{ trans('cruds.asset_management.form_fields.contact_no') }}</label>
-                        <input class="form-control {{ $errors->has('contact_no') ? 'is-invalid' : '' }}" type="text"
+                        <input class="form-control" type="text"
                             name="contact_no" id="contact_no" value="{{ old('contact_no', '') }}">
-                        @if ($errors->has('contact_no'))
+                        {{-- @if ($errors->has('contact_no'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('contact_no') }}
                             </div>
-                        @endif
-                        <span class="help-block">{{ trans('cruds.asset_management.form_fields.contact_no_helper') }}</span>
+                        @endif --}}
+                        {{-- <span class="help-block">{{ trans('cruds.asset_management.form_fields.contact_no_helper') }}</span> --}}
                     </div>
 
                     {{-- Invoice Items --}}
@@ -113,7 +113,7 @@
                     </div>
 
                     <div class="col-md-12 mt-4 text-end">
-                        <button class="btn btn-success min-w-200" type="submit">
+                        <button class="btn btn-success min-w-200" type="button" id="saveInvoiceBtn">
                             Save Invoice
                         </button>
                     </div>
@@ -122,6 +122,7 @@
         </div>
     </div>
     <script src="{{ asset('js/asset_management/invoice.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endsection
 @section('scripts')
     <script>
