@@ -25,12 +25,7 @@
                             for="name">{{ trans('cruds.asset_management.form_fields.name') }}</label>
                         <input class="form-control " type="text"
                             name="name" id="name" value="{{ old('name', '') }}">
-                        {{-- @if ($errors->has('name'))
-                            <div class="invalid-feedback">
-                                {{ $errors->first('name') }}
-                            </div>
-                        @endif --}}
-                        {{-- <span class="help-block">{{ trans('cruds.asset_management.form_fields.name_helper') }}</span> --}}
+
                     </div>
 
                     <div class="form-group">
@@ -38,24 +33,14 @@
                             for="address">{{ trans('cruds.asset_management.form_fields.address') }}</label>
                         <textarea class="form-control " name="address" id="address"
                             rows="3">{{ old('address', '') }}</textarea>
-                        {{-- @if ($errors->has('address'))
-                            <div class="invalid-feedback">
-                                {{ $errors->first('address') }}
-                            </div>
-                        @endif --}}
-                        {{-- <span class="help-block">{{ trans('cruds.asset_management.form_fields.address_helper') }}</span> --}}
+
                     </div>
                     <div class="form-group">
                         <label class="required"
                             for="contact_no">{{ trans('cruds.asset_management.form_fields.contact_no') }}</label>
                         <input class="form-control" type="text"
                             name="contact_no" id="contact_no" value="{{ old('contact_no', '') }}">
-                        {{-- @if ($errors->has('contact_no'))
-                            <div class="invalid-feedback">
-                                {{ $errors->first('contact_no') }}
-                            </div>
-                        @endif --}}
-                        {{-- <span class="help-block">{{ trans('cruds.asset_management.form_fields.contact_no_helper') }}</span> --}}
+                       
                     </div>
 
                     {{-- Invoice Items --}}
