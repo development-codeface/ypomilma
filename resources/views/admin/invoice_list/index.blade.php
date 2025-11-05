@@ -41,7 +41,7 @@
                         <label for="status">Status</label>
                         <select name="status" id="status" class="form-control">
                             <option value="">All</option>
-                            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved
+                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending
                             </option>
                             <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>Delivered
                             </option>
@@ -110,8 +110,8 @@
                                             @method('PUT')
                                             <button type="submit" class="btn btn-xs btn-warning"
                                                 @if ($invoice->status == 'delivered') disabled @endif>
-                                                @if ($invoice->status == 'approved')
-                                                    <i class="fi fi-br-ban"></i> Approved
+                                                @if ($invoice->status == 'pending')
+                                                    <i class="fi fi-br-ban"></i> Pending
                                                 @elseif($invoice->status == 'delivered')
                                                     <i class="fi fi-br-check"></i> Delivered
                                                 @else

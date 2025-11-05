@@ -11,6 +11,7 @@ use App\Models\AggencySale;
 use App\Models\Invoice;
 use App\Models\Assets;
 use App\Models\Account;
+use Illuminate\Support\Facades\DB;
 
 
 class AssetController extends Controller
@@ -103,6 +104,22 @@ class AssetController extends Controller
 
         $data = $request->all();
         $items = $request->items;
+
+        $savedIndices = [];
+        $failedIndex = null;
+        $errorMessage = '';
+
+        foreach ($items as $indexs =>  $item_data) {
+            $asset = Assets::with('product')->find($item_data['asset_id']);
+
+            if ($asset == null) {
+              return response()->json([
+                  'error' => true,
+                  'message' => "Invalid product selected at index {$indexs}."
+              ]);
+            }
+        }
+
         $user_id = auth()->user()->id;
         $dairy_id = Dairy::where('admin_userid', $user_id)->pluck('id')->first();
 
@@ -111,12 +128,9 @@ class AssetController extends Controller
         $invoiceId = 'INV' . str_pad($num, 5, '0', STR_PAD_LEFT);
         // $total_amount = array_sum(array_column($items, 'total'));
 
-        $agency_contact = AggencySale::where('contact_no', $data['contact_no'])->first();
-        $savedIndices = [];
-        $failedIndex = null;
-        $errorMessage = '';
+        // $agency_contact = AggencySale::where('contact_no', $data['contact_no'])->first();
 
-        if (empty($agency_contact)) {
+        // if (empty($agency_contact)) {
             $agency_sale = AggencySale::create([
                 'dairy_id' => $dairy_id,
                 'invoice_id' => $invoiceId,
@@ -124,20 +138,16 @@ class AssetController extends Controller
                 'address' => $data['address'],
                 'contact_no' => $data['contact_no'],
             ]);
-        }
+        // }
 
         foreach ($items as $index => $item) {
             $asset = Assets::with('product')->find($item['asset_id']);
 
             // if (!$asset) {
-            //     return response()->json(['error' => true, 'message' => 'Invalid product selected.']);
+            //     $failedIndex = $index;
+            //     $errorMessage = "Invalid product selected at index {$index}.";
+            //     break;
             // }
-
-            if (!$asset) {
-                $failedIndex = $index;
-                $errorMessage = "Invalid product selected at index {$index}.";
-                break;
-            }
 
             $quantity = $item['quantity'];
             $unitPrice = $item['unit_price'];
@@ -145,11 +155,6 @@ class AssetController extends Controller
             $gstPercent = $item['gst_percent'];
             $taxType = $item['tax_type'];
             $itemTotal = $item['total'];
-
-
-            // if ($quantity > $asset->quantity) {
-            //     return response()->json(['error' => true, 'message' => "Requested ({$asset->product->productname}) quantity ({$item['quantity']}) exceeds available stock ({$asset->quantity}) Invoice Items Index({$index})."]);
-            // }
 
             if ($quantity > $asset->quantity) {
                 $failedIndex = $index;
@@ -180,7 +185,7 @@ class AssetController extends Controller
             $quantity_asset->quantity = $quantity_asset->quantity - $quantity;
             $quantity_asset->save();
 
-            $agency_total = AggencySale::where('contact_no', $data['contact_no'])->first();
+            $agency_total = AggencySale::where('id', $agency_sale->id)->first();
             $agency_total->total_amount = $agency_total->total_amount + $itemTotal;
             $agency_total->save();
 
@@ -211,4 +216,5 @@ class AssetController extends Controller
         // $this->assetManage->AssetStore($data, $items, $dairy_id, $asset);
         return response()->json(['success' => true, 'message' => 'Agency Invoice created successfully.']);
     }
+
 }
