@@ -57,14 +57,30 @@ document.addEventListener("DOMContentLoaded", function () {
                         showDenyButton: true,
                         confirmButtonText: "ok",
                         denyButtonText: "Cancel",
-                    }).then((result) => {
-
-                    });
-                } else if(response.error) {
+                    }).then((result) => {});
+                } else if (response.error) {
+                    // $("form")[0].reset();
                     Swal.fire({
                         text: `${response.message}`,
                         icon: "error",
                     });
+
+                    if (
+                        response.saved_indices &&
+                        response.saved_indices.length > 0
+                    ) {
+                        response.saved_indices.forEach((i) => {
+                            $("#itemsTable tbody tr").eq(i).remove();
+                        });
+                    }
+
+                    // // 🔥 Keep only failed row visible
+                    // if (response.failed_index !== undefined) {
+                    //     const failedRow = $("#itemsTable tbody tr").eq(
+                    //         response.failed_index
+                    //     );
+                    //     failedRow.addClass("table-danger"); // highlight error row
+                    // }
                 }
             },
             error: function (xhr) {

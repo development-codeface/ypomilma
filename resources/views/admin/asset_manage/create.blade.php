@@ -8,16 +8,6 @@
         <div class="card-body col-md-12">
             <form method="POST" id="invoiceForm" action="" enctype="multipart/form-data">
                 @csrf
-                {{-- @if ($errors->has('items'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('items') }}
-                    </div>
-                @endif
-                @if ($errors->has('quantity'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('quantity') }}
-                    </div>
-                @endif --}}
                 <div class="row">
                     {{-- Dairy --}}
                     <div class="form-group">
@@ -40,7 +30,7 @@
                             for="contact_no">{{ trans('cruds.asset_management.form_fields.contact_no') }}</label>
                         <input class="form-control" type="text"
                             name="contact_no" id="contact_no" value="{{ old('contact_no', '') }}">
-                       
+
                     </div>
 
                     {{-- Invoice Items --}}

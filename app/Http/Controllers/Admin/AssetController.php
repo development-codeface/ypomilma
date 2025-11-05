@@ -103,34 +103,40 @@ class AssetController extends Controller
 
         $data = $request->all();
         $items = $request->items;
-
         $user_id = auth()->user()->id;
         $dairy_id = Dairy::where('admin_userid', $user_id)->pluck('id')->first();
 
         $lastInvoice = AggencySale::lockForUpdate()->orderBy('id', 'desc')->first();
         $num = $lastInvoice ? (int) substr($lastInvoice->id, 3) + 1 : 1;
         $invoiceId = 'INV' . str_pad($num, 5, '0', STR_PAD_LEFT);
-        $total_amount = array_sum(array_column($items, 'total'));
+        // $total_amount = array_sum(array_column($items, 'total'));
 
-        // $agency_contact = AggencySale::where($data['contact_no'])->first();
+        $agency_contact = AggencySale::where('contact_no', $data['contact_no'])->first();
+        $savedIndices = [];
+        $failedIndex = null;
+        $errorMessage = '';
 
-        $agency_sale = AggencySale::create([
-            'invoice_id' => $invoiceId,
-            'name' => $data['name'],
-            'address' => $data['address'],
-            'contact_no' => $data['contact_no'],
-            'total_amount' => $total_amount,
-        ]);
-
-        $account = Account::where('dairy_id', $dairy_id)->first();
-        $account->main_balance = $account->main_balance + $total_amount;
-        $account->save();
+        if (empty($agency_contact)) {
+            $agency_sale = AggencySale::create([
+                'dairy_id' => $dairy_id,
+                'invoice_id' => $invoiceId,
+                'name' => $data['name'],
+                'address' => $data['address'],
+                'contact_no' => $data['contact_no'],
+            ]);
+        }
 
         foreach ($items as $index => $item) {
             $asset = Assets::with('product')->find($item['asset_id']);
 
+            // if (!$asset) {
+            //     return response()->json(['error' => true, 'message' => 'Invalid product selected.']);
+            // }
+
             if (!$asset) {
-                return response()->json(['error' => true, 'message' => 'Invalid product selected.']);
+                $failedIndex = $index;
+                $errorMessage = "Invalid product selected at index {$index}.";
+                break;
             }
 
             $quantity = $item['quantity'];
@@ -138,32 +144,48 @@ class AssetController extends Controller
             $discount = $item['discount'] ?? 0;
             $gstPercent = $item['gst_percent'];
             $taxType = $item['tax_type'];
+            $itemTotal = $item['total'];
+
+
+            // if ($quantity > $asset->quantity) {
+            //     return response()->json(['error' => true, 'message' => "Requested ({$asset->product->productname}) quantity ({$item['quantity']}) exceeds available stock ({$asset->quantity}) Invoice Items Index({$index})."]);
+            // }
 
             if ($quantity > $asset->quantity) {
-                return response()->json(['error' => true, 'message' => "Requested ({$asset->product->productname}) quantity ({$item['quantity']}) exceeds available stock ({$asset->quantity})."]);
+                $failedIndex = $index;
+                $errorMessage = "Requested ({$asset->product->productname}) quantity ({$item['quantity']}) exceeds available stock ({$asset->quantity}).";
+                break;
             }
 
             $baseValue = ($unitPrice * $quantity) - $discount;
             $gstAmount = 0;
-            $itemTotal = 0;
+            // $itemTotal = 0;
             $taxableValue = 0;
 
             if ($taxType === 'inclusive') {
                 $taxableValue = $baseValue / (1 + $gstPercent / 100);
                 $gstAmount = $baseValue - $taxableValue;
-                $itemTotal = $baseValue;
+                // $itemTotal = $baseValue;
             } else {
                 $taxableValue = $baseValue;
                 $gstAmount = $baseValue * ($gstPercent / 100);
-                $itemTotal = $taxableValue + $gstAmount;
+                // $itemTotal = $taxableValue + $gstAmount;
             }
+
+            $account = Account::where('dairy_id', $dairy_id)->first();
+            $account->main_balance = $account->main_balance + $itemTotal;
+            $account->save();
 
             $quantity_asset = Assets::where('id', $item['asset_id'])->first();
             $quantity_asset->quantity = $quantity_asset->quantity - $quantity;
             $quantity_asset->save();
 
+            $agency_total = AggencySale::where('contact_no', $data['contact_no'])->first();
+            $agency_total->total_amount = $agency_total->total_amount + $itemTotal;
+            $agency_total->save();
+
             AggencyBill::create([
-                'aggency_sale_id' => $agency_sale->id,
+                'aggency_sale_id' => $agency_total->id,
                 'asset_id' => $item['asset_id'],
                 'quantity' => $quantity,
                 'price' => $unitPrice,
@@ -172,6 +194,17 @@ class AssetController extends Controller
                 'gst_amount' => $gstAmount,
                 'discount' => $discount,
                 'total' => $itemTotal,
+            ]);
+
+            $savedIndices[] = $index;
+        }
+
+        if ($failedIndex !== null) {
+            return response()->json([
+                'error' => true,
+                'message' => $errorMessage,
+                'failed_index' => $failedIndex,
+                'saved_indices' => $savedIndices
             ]);
         }
 
