@@ -9,17 +9,24 @@
     <div class="card-body">
         <form method="GET" action="{{ route('admin.transactions.index') }}" class="mb-4">
             <div class="row g-3">
-                <div class="col-md-3">
-                    <label>Dairy <span class="text-danger">*</span></label>
-                    <select name="dairy_id" class="form-control" required>
-                        <option value="">All Dairies</option>
-                        @foreach ($dairies as $dairy)
-                            <option value="{{ $dairy->id }}" {{ request('dairy_id') == $dairy->id ? 'selected' : '' }}>
-                                {{ $dairy->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                @php
+                    $user = auth()->user();
+                    $roleName = strtolower($user->role_name);
+                @endphp
+
+                @if ($roleName === 'superadmin')
+                    <div class="col-md-3">
+                        <label>Dairy <span class="text-danger">*</span></label>
+                        <select name="dairy_id" class="form-control" required>
+                            <option value="">All Dairies</option>
+                            @foreach ($dairies as $dairy)
+                                <option value="{{ $dairy->id }}" {{ request('dairy_id') == $dairy->id ? 'selected' : '' }}>
+                                    {{ $dairy->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
 
                 <!-- <div class="col-md-2">
                     <label>Type</label>

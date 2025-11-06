@@ -14,5 +14,8 @@ class AggencySale extends Model
         'address',
         'invoice_id',
         'total_amount',
+        'dairy_id'
     ];
+
+
 }

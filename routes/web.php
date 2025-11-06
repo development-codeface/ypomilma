@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Admin\InvoiceListController;
 use App\Http\Controllers\Admin\AssetController;
+use App\Http\Controllers\Admin\AggencySaleController;
 
 Route::redirect('/', '/login');
 
@@ -83,6 +84,10 @@ Route::group([
     Route::get('asset-management/create', [AssetController::class, 'create'])->name('asset-management.create');
     Route::get('get-asset-details/{assetId}', [AssetController::class, 'getAssetDetails'])->name('get-asset-details');
     Route::post('asset-management/invoice/store', [AssetController::class, 'store'])->name('asset-management.invoice.store');
+
+    Route::get('aggency-sale', [AggencySaleController::class, 'index'])->name('aggency-sale.index');
+    Route::get('aggency-sale/show/{id}', [AggencySaleController::class, 'show'])->name('aggency-sale.show');
+
 
     Route::resource('expenses', ExpenseController::class);
     Route::get('expenses/items/{categoryId}', [ExpenseController::class, 'getItemsByCategory'])->name('expenses.items');

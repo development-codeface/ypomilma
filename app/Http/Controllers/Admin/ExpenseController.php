@@ -74,7 +74,7 @@ class ExpenseController extends Controller
         return response()->json($merged);
     }
 
-    public function store(Request $request)
+    public function storeold(Request $request)
     {
         $request->validate([
             'expensecategory_id' => 'required',
@@ -134,9 +134,88 @@ class ExpenseController extends Controller
             ->route('admin.expenses.index')
             ->with('success', 'Expense added successfully.');
     }
+      public function store(Request $request)
+    {
+        $request->validate([
+            'expensecategory_id' => 'required',
+            'expense_item'       => 'required',
+            'rate'               => 'required|numeric',
+            'quantity'           => 'required|numeric',
+            'amount'             => 'required|numeric',
+        ]);
 
+        $user = auth()->user();
+        $roleName = strtolower($user->role_name); 
+        $data = $request->all();
 
-    
+        try {
+            DB::beginTransaction();
+
+            if ($roleName === 'superadmin') {
+                // ✅ Superadmin logic: no balance checks
+                $data['is_headoffice'] = 1;
+                $expense = \App\Models\Expense::create($data);
+            } 
+            else {
+                // 👤 Non-superadmin: check dairy, account, and balance
+                $dairy = \App\Models\Dairy::where('admin_userid', $user->id)->first();
+
+                if (!$dairy) {
+                    DB::rollBack();
+                    return redirect()->back()->with('error', 'No dairy assigned to your account.');
+                }
+
+                $account = \App\Models\Account::where('dairy_id', $dairy->id)->first();
+
+                if (!$account) {
+                    DB::rollBack();
+                    return redirect()->back()->with('error', 'No account found for this dairy.');
+                }
+
+                $amount = $request->amount;
+
+                if ($account->main_balance < $amount) {
+                    DB::rollBack();
+                    return redirect()->back()->with('error', 'Insufficient main balance to record this expense.');
+                }
+
+                // Deduct balance
+                $account->main_balance -= $amount;
+                $account->save();
+
+                // Create expense for this dairy
+                $data['dairy_id'] = $dairy->id;
+                $expense = \App\Models\Expense::create($data);
+
+                // Record transaction entry
+                \App\Models\Transactions::create([
+                    'dairy_id'             => $dairy->id,
+                    'fund_allocation_id'   => null, 
+                    'expense_category_id'  => $expense->expensecategory_id,
+                    'type'                 => 'debit',
+                    'amount'               => $amount,
+                    'reference_no'         => 'EXP-' . strtoupper(uniqid()),
+                    'description'          => 'Expense: ' . $expense->expense_item,
+                    'status'               => 'completed',
+                    'transaction_date'     => now(),
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('admin.expenses.index')
+                ->with('success', 'Expense added successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()
+                ->back()
+                ->with('error', 'An error occurred while saving the expense: ' . $e->getMessage());
+        }
+    }
+
     public function edit(Expense $expense)
     {
         $categories = DB::table('expense_categories')->pluck('name', 'id');

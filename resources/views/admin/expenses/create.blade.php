@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 itemSelect.innerHTML = '<option value="">Select Item</option>';
                 if (data.length > 0) {
                     data.forEach(item => {
-                        const label = `${item.name} (${item.type})`;
+                        const label = `${item.name} `;
                         itemSelect.innerHTML += `<option value="${item.item_code}">${label}</option>`;
                     });
                 } else {

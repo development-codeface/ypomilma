@@ -1,17 +1,22 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="card w_120">
+<div class="card w_120" >
     <div class="card-header d-flex justify-content-between align-items-center">
         <p>
             <i class="fi fi-br-eye mr_15_icc"></i> Invoice Details
         </p>
-        <a href="{{ route('admin.invoices.index') }}" class="btn btn-secondary btn-sm">
-            <i class="fi fi-br-angle-left"></i> Back
-        </a>
+        <div>
+            <button type="button" class="btn btn-success btn-sm me-2" onclick="printInvoice()">
+                <i class="fi fi-br-print"></i> Print
+            </button>
+            <a href="{{ route('admin.invoices.index') }}" class="btn btn-secondary btn-sm">
+                <i class="fi fi-br-angle-left"></i> Back
+            </a>
+        </div>
     </div>
 
-    <div class="card-body">
+    <div class="card-body" id="invoiceArea">
         {{-- Invoice Header --}}
         <div class="row mb-4">
             <div class="col-md-6">
@@ -29,8 +34,7 @@
                 <strong>Invoice ID:</strong> {{ $invoice->id }}
             </div>
             <div class="col-md-4">
-                <!-- <strong>Status:</strong>
-                <span class="badge badge-success">{{ ucfirst($invoice->status) }}</span> -->
+                {{-- Status could go here --}}
             </div>
             <div class="col-md-4">
                 <strong>Created Date:</strong> {{ $invoice->created_at->format('d M Y, h:i A') }}
@@ -108,10 +112,47 @@
                 </table>
             </div>
         </div>
-
-        <div class="mt-3 text-end">
-            <a href="{{ route('admin.invoices.index') }}" class="btn btn-secondary">Back to List</a>
-        </div>
     </div>
 </div>
+
+{{-- ✅ JavaScript for Printing --}}
+<script>
+function printInvoice() {
+    const printContents = document.getElementById('invoiceArea').innerHTML;
+    const originalContents = document.body.innerHTML;
+
+    // Replace body content with the invoice only
+    document.body.innerHTML = printContents;
+
+    // Trigger print
+    window.print();
+
+    // Restore original page content after printing
+    document.body.innerHTML = originalContents;
+
+    // Reload scripts and styles
+    window.location.reload();
+}
+</script>
+
+{{-- Optional: print-specific styles --}}
+<style>
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #invoiceArea, #invoiceArea * {
+        visibility: visible;
+    }
+    #invoiceArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    .btn, .card-header .btn {
+        display: none !important;
+    }
+}
+</style>
 @endsection

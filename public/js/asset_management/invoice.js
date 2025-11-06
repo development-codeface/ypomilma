@@ -32,10 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     $("#saveInvoiceBtn").on("click", function (e) {
-        // $("#invoiceForm").submit();
-
         e.preventDefault();
-
         let formData = new FormData($("form")[0]);
 
         $.ajax({
@@ -45,7 +42,6 @@ document.addEventListener("DOMContentLoaded", function () {
             contentType: false,
             processData: false,
             success: function (response) {
-                console.log("response", response);
                 if (response.success) {
                     $("form")[0].reset();
                     $(".invalid-feedback").remove(); // remove old errors
@@ -58,13 +54,31 @@ document.addEventListener("DOMContentLoaded", function () {
                         confirmButtonText: "ok",
                         denyButtonText: "Cancel",
                     }).then((result) => {
-
+                        location.href = "/admin/aggency-sale";
                     });
-                } else if(response.error) {
+                } else if (response.error) {
+                    // $("form")[0].reset();
                     Swal.fire({
                         text: `${response.message}`,
                         icon: "error",
                     });
+
+                    if (
+                        response.saved_indices &&
+                        response.saved_indices.length > 0
+                    ) {
+                        response.saved_indices.forEach((i) => {
+                            $("#itemsTable tbody tr").eq(i).remove();
+                        });
+                    }
+
+                    // // 🔥 Keep only failed row visible
+                    // if (response.failed_index !== undefined) {
+                    //     const failedRow = $("#itemsTable tbody tr").eq(
+                    //         response.failed_index
+                    //     );
+                    //     failedRow.addClass("table-danger"); // highlight error row
+                    // }
                 }
             },
             error: function (xhr) {
