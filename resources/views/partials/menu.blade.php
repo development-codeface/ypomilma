@@ -138,6 +138,16 @@
                 </li>
             @endcan
 
+               @can('aggency_sale_access')
+                <li class="nav-item">
+                    <a href="{{ route('admin.aggency-sale.index') }}"
+                        class="nav-link {{ request()->is('admin/aggency-sale*') ? 'active' : '' }}">
+                        <i class="fi fi-br-building nav-icon"></i>
+                        {{ trans('cruds.aggency_sale.title') }}
+                    </a>
+                </li>
+            @endcan
+
 
             @if (Gate::check('expensecategory_access') ||
                     Gate::check('expenseitem_access') ||

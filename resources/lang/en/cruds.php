@@ -441,6 +441,28 @@ return [
         ]
     ],
 
+    'aggency_sale'          => [
+        'title'          => 'Aggency Sale',
+        'title_singular' => 'Aggency Sale',
+        'fields'         => [
+            'id'                   => 'ID',
+            'id_helper'            => '',
+            'invoice_id'                => 'Invoice ID',
+            'name'              => 'Name',
+            'contact_no'             => 'Contact No',
+            'total_amount'               => 'Total Amount',
+            'created_date'        => 'Created Date',
+            'product'               => 'Product',
+            'quantity'              => 'Quantity',
+            'price'                 => 'Price',
+            'discount'              => 'Discount',
+            'gst_percent'           => 'GST Percent',
+            'tax_type'              => 'Tax Type',
+            'total'                 => 'Total',
+            'action'                => 'Actions',
+        ],
+    ],
+
     'report'    => [
         'title'          => 'Insights',
     ],

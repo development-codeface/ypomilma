@@ -16,4 +16,6 @@ class AggencySale extends Model
         'total_amount',
         'dairy_id'
     ];
+
+
 }

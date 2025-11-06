@@ -32,10 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     $("#saveInvoiceBtn").on("click", function (e) {
-        // $("#invoiceForm").submit();
-
         e.preventDefault();
-
         let formData = new FormData($("form")[0]);
 
         $.ajax({
@@ -45,7 +42,6 @@ document.addEventListener("DOMContentLoaded", function () {
             contentType: false,
             processData: false,
             success: function (response) {
-                console.log("response", response);
                 if (response.success) {
                     $("form")[0].reset();
                     $(".invalid-feedback").remove(); // remove old errors
@@ -57,7 +53,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         showDenyButton: true,
                         confirmButtonText: "ok",
                         denyButtonText: "Cancel",
-                    }).then((result) => {});
+                    }).then((result) => {
+                        location.href = "/admin/aggency-sale";
+                    });
                 } else if (response.error) {
                     // $("form")[0].reset();
                     Swal.fire({
