@@ -83,28 +83,43 @@ class DashboardController extends Controller
                     return ($year - 1) . '-' . $year;
                 });
         } else {
+            //  $currentFinancialYearStart = $now->month >= 4
+            //     ? Carbon::create($now->year, 4, 1)
+            //     : Carbon::create($now->year - 1, 4, 1);
+            // $currentFinancialYearEnd = $currentFinancialYearStart->copy()->addYear()->subDay();
+
+            // // Get selected financial year from request
+            // // $selectedYear = $request->get('financial_year');
+
+            // $currentYear = Carbon::now()->year;       // 2025
+            // $previousYear = Carbon::now()->subYear()->year;  // 2024
+
+            // $selectedYear = $previousYear . '-' . $currentYear;
+
+            // if (!$selectedYear) {
+            //     // Default: current financial year (e.g., 2025-2026)
+            //     $selectedYear = $currentFinancialYearStart->format('Y') . '-' . $currentFinancialYearEnd->format('Y');
+            // }
+
+            // // Parse start/end for the selected financial year
+            // [$startYear, $endYear] = explode('-', $selectedYear);
+            // $financialYearStart = Carbon::create($startYear, 4, 1);
+            // $financialYearEnd = Carbon::create($endYear, 3, 31, 23, 59, 59);
+
              $currentFinancialYearStart = $now->month >= 4
-                ? Carbon::create($now->year, 4, 1)
-                : Carbon::create($now->year - 1, 4, 1);
-            $currentFinancialYearEnd = $currentFinancialYearStart->copy()->addYear()->subDay();
+                    ? Carbon::create($now->year, 4, 1)
+                    : Carbon::create($now->year - 1, 4, 1);
+                $currentFinancialYearEnd = $currentFinancialYearStart->copy()->addYear()->subDay();
 
-            // Get selected financial year from request
-            // $selectedYear = $request->get('financial_year');
+                if ($now->month >= 4) {
+                    $selectedYear = $now->year . '-' . ($now->year + 1);   
+                } else {
+                    $selectedYear = ($now->year - 1) . '-' . $now->year; 
+                }
 
-            $currentYear = Carbon::now()->year;       // 2025
-            $previousYear = Carbon::now()->subYear()->year;  // 2024
-
-            $selectedYear = $previousYear . '-' . $currentYear;
-
-            if (!$selectedYear) {
-                // Default: current financial year (e.g., 2025-2026)
-                $selectedYear = $currentFinancialYearStart->format('Y') . '-' . $currentFinancialYearEnd->format('Y');
-            }
-
-            // Parse start/end for the selected financial year
-            [$startYear, $endYear] = explode('-', $selectedYear);
-            $financialYearStart = Carbon::create($startYear, 4, 1);
-            $financialYearEnd = Carbon::create($endYear, 3, 31, 23, 59, 59);
+                [$startYear, $endYear] = explode('-', $selectedYear);
+                $financialYearStart = Carbon::create($startYear, 4, 1);
+                $financialYearEnd = Carbon::create($endYear, 3, 31, 23, 59, 59);
 
             // Get selected dairy
             // $selectedDairyId = $request->get('dairy_id');
@@ -116,9 +131,9 @@ class DashboardController extends Controller
                 ->sum('amount');
 
             // Total expenses in selected financial year
-            $totalExpenses = Expense::whereBetween('created_at', [$financialYearStart, $financialYearEnd])
+            $totalExpenses = Transactions::whereBetween('created_at', [$financialYearStart, $financialYearEnd])
+               ->whereIn('type', ['debit', 'hold']) 
                 ->sum('amount');
-
             // Dairy list
             $dairies = Dairy::select('id', 'name')->get();
 
@@ -129,8 +144,9 @@ class DashboardController extends Controller
                     'fund_allocated' => FundAllocation::where('dairy_id', $selectedDairyId)
                         ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
                         ->sum('amount'),
-                    'expenses' => Expense::where('dairy_id', $selectedDairyId)
+                     'expenses' => Transactions::where('dairy_id', $selectedDairyId)
                         ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
+                         ->whereIn('type', ['debit', 'hold']) 
                         ->sum('amount'),
                     'invoices' => Invoice::where('dairy_id', $selectedDairyId)
                         ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
