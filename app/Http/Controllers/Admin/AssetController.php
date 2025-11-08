@@ -111,12 +111,20 @@ class AssetController extends Controller
 
         foreach ($items as $indexs =>  $item_data) {
             $asset = Assets::with('product')->find($item_data['asset_id']);
+            $quantity = $item_data['quantity'];
 
             if ($asset == null) {
-              return response()->json([
-                  'error' => true,
-                  'message' => "Invalid product selected at index {$indexs}."
-              ]);
+                return response()->json([
+                    'error' => true,
+                    'message' => "Invalid product selected at index {$indexs}."
+                ]);
+            }
+
+            if ($quantity > $asset->quantity) {
+                return response()->json([
+                    'error' => true,
+                    'message' => "Requested ({$asset->product->productname}) quantity ({$item_data['quantity']}) exceeds available stock ({$asset->quantity})."
+                ]);
             }
         }
 
@@ -128,17 +136,14 @@ class AssetController extends Controller
         $invoiceId = 'INV' . str_pad($num, 5, '0', STR_PAD_LEFT);
         // $total_amount = array_sum(array_column($items, 'total'));
 
-        // $agency_contact = AggencySale::where('contact_no', $data['contact_no'])->first();
 
-        // if (empty($agency_contact)) {
-            $agency_sale = AggencySale::create([
-                'dairy_id' => $dairy_id,
-                'invoice_id' => $invoiceId,
-                'name' => $data['name'],
-                'address' => $data['address'],
-                'contact_no' => $data['contact_no'],
-            ]);
-        // }
+        $agency_sale = AggencySale::create([
+            'dairy_id' => $dairy_id,
+            'invoice_id' => $invoiceId,
+            'name' => $data['name'],
+            'address' => $data['address'],
+            'contact_no' => $data['contact_no'],
+        ]);
 
         foreach ($items as $index => $item) {
             $asset = Assets::with('product')->find($item['asset_id']);
@@ -216,5 +221,4 @@ class AssetController extends Controller
         // $this->assetManage->AssetStore($data, $items, $dairy_id, $asset);
         return response()->json(['success' => true, 'message' => 'Agency Invoice created successfully.']);
     }
-
 }
