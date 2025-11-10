@@ -128,9 +128,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (response.success) {
                     $("form")[0].reset();
                     $("#invoiceTableContainer").load(location.href + " #invoiceTableContainer > *");
-
-                    // $(".invalid-feedback").remove(); // remove old errors
-                    // $(".is-invalid").removeClass("is-invalid");
                     // Swal.fire({
                     //     text: `${response.message}`,
                     //     icon: "success",
@@ -150,29 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             },
             error: function (xhr) {
-                if (xhr.status === 422) {
-                    let errors = xhr.responseJSON.errors;
-                    $(".alert-danger").remove(); // remove old errors
-                    $.each(errors, function (key, value) {
-                        let formattedKey =
-                            key
-                                .replace(/\.(\d+)\./g, "[$1][")
-                                .replace(/\./g, "][") + "]";
-                        let input = $(`[name="${formattedKey}"]`);
-                        console.log("input", input);
-                        if (input.length > 0) {
-                            input.addClass("is-invalid");
-                            input.after(
-                                `<div class="invalid-feedback d-block">${value[0]}</div>`
-                            );
-                        } else {
-                            // For general/global errors (like 'items' or 'quantity')
-                            $("#invoiceForm").prepend(
-                                `<div class="alert alert-danger mb-3">${value[0]}</div>`
-                            );
-                        }
-                    });
-                }
+               console.log(xhr);
             },
         });
     });
