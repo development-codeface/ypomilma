@@ -76,7 +76,7 @@ Route::group([
 
     // Invoice List
     Route::get('invoice-list', [InvoiceListController::class, 'index'])->name('invoice-list.index');
-    Route::put('invoice/status/change/{id}', [InvoiceListController::class, 'statusChange'])->name('invoice.status.change');
+    Route::post('invoice/status/change/{id}', [InvoiceListController::class, 'statusChange'])->name('invoice.status.change');
 
 
     //Asset Management

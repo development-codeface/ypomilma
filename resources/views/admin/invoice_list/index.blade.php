@@ -72,43 +72,42 @@
             </form>
 
             {{-- 🧾 Invoice Table --}}
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>{{ trans('cruds.invoice.fields.id') }}</th>
-                            <th>{{ trans('cruds.invoice.fields.diary') }}</th>
-                            <th>{{ trans('cruds.invoice.fields.vendor') }}</th>
-                            <th>{{ trans('cruds.invoice.fields.total_amount') }}</th>
-                            <th>{{ trans('cruds.invoice.fields.status') }}</th>
-                            <th>{{ trans('cruds.invoice.fields.created_at') }}</th>
-                            <th>{{ trans('cruds.invoice.fields.action') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($invoice_list as $invoice)
+            <div id="invoiceTableContainer">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead>
                             <tr>
-                                <td>{{ $invoice->id ?? 'N/A' }}</td>
-                                <td>{{ $invoice->dairy->name ?? 'N/A' }}</td>
-                                <td>{{ $invoice->vendor->name ?? 'N/A' }}</td>
-                                <td>{{ $invoice->total_amount ?? 'N/A' }}</td>
-                                <td>
-                                    @if ($invoice->status == 'pending')
-                                        <span class="badge bg-success">pending</span>
-                                    @elseif($invoice->status == 'delivered')
-                                        <span class="badge bg-info">Delivered</span>
-                                    @else
-                                        <span class="badge bg-danger">Cancelled</span>
-                                    @endif
-                                </td>
-                                <td>{{ $invoice->created_at->format('d-m-Y') }}</td>
-                                <td>
-                                    @if ($invoice->status !== 'cancelled')
-                                        <form action="{{ route('admin.invoice.status.change', $invoice->id) }}"
-                                            method="POST" style="display: inline-block;">
-                                            @csrf
-                                            @method('PUT')
-                                            <button type="submit" class="btn btn-xs btn-warning"
+                                <th>{{ trans('cruds.invoice.fields.id') }}</th>
+                                <th>{{ trans('cruds.invoice.fields.diary') }}</th>
+                                <th>{{ trans('cruds.invoice.fields.vendor') }}</th>
+                                <th>{{ trans('cruds.invoice.fields.total_amount') }}</th>
+                                <th>{{ trans('cruds.invoice.fields.status') }}</th>
+                                <th>{{ trans('cruds.invoice.fields.created_at') }}</th>
+                                <th>{{ trans('cruds.invoice.fields.action') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($invoice_list as $invoice)
+                                <tr>
+                                    <td>{{ $invoice->id ?? 'N/A' }}</td>
+                                    <td>{{ $invoice->dairy->name ?? 'N/A' }}</td>
+                                    <td>{{ $invoice->vendor->name ?? 'N/A' }}</td>
+                                    <td>{{ $invoice->total_amount ?? 'N/A' }}</td>
+                                    <td>
+                                        @if ($invoice->status == 'pending')
+                                            <span class="badge bg-success">pending</span>
+                                        @elseif($invoice->status == 'delivered')
+                                            <span class="badge bg-info">Delivered</span>
+                                        @else
+                                            <span class="badge bg-danger">Cancelled</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $invoice->created_at->format('d-m-Y') }}</td>
+                                    <td>
+                                        @if ($invoice->status !== 'cancelled')
+                                            <button type="button" class="btn btn-xs btn-warning" id="invoice_status_btn"
+                                                data-bs-toggle="modal" data-id="{{ $invoice->id }}"
+                                                data-bs-target="#invoice_modal"
                                                 @if ($invoice->status == 'delivered') disabled @endif>
                                                 @if ($invoice->status == 'pending')
                                                     <i class="fi fi-br-ban"></i> Pending
@@ -118,19 +117,18 @@
                                                     <i class="fi fi-br-close"></i> Cancelled
                                                 @endif
                                             </button>
-                                        </form>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center">No invoices found</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="text-center">No invoices found</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
-
             {{-- Pagination --}}
             <div class="d-flex justify-content-center mt-4">
                 {{ $invoice_list->links('pagination::bootstrap-5') }}
@@ -138,5 +136,39 @@
 
         </div>
     </div>
+    <div class="modal fade" id="invoice_modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="statusChangeForm">
+                    @csrf
+                    <input type="hidden" name="invoice_id" id="invoice_id">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Status Change</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="" for="date">Delivered Date</label>
+                            <input class="form-control" type="date" name="date" id="date"
+                                value="{{ old('date', '') }}">
 
+                        </div>
+                        <div class="form-group">
+                            <label class="" for="invoice_no">Invoice No</label>
+                            <input class="form-control" type="text" name="invoice_no" id="invoice_no"
+                                value="{{ old('invoice_no', '') }}">
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="status_change_btn"
+                            data-bs-dismiss="modal">Submit</button>
+
+                        {{-- <button type="button" class="btn btn-danger" id="modal_hide" data-bs-dismiss="modal">Close</button> --}}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="{{ asset('js/asset_management/invoice.js') }}"></script>
 @endsection

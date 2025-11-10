@@ -108,4 +108,52 @@ document.addEventListener("DOMContentLoaded", function () {
             },
         });
     });
+
+    $("#status_change_btn").on("click", function (e) {
+        e.preventDefault();
+        let formData = new FormData($("#statusChangeForm")[0]);
+        console.log("formData", formData);
+        let invoice_id = $("#invoice_id").val();
+
+        $.ajax({
+            url: "/admin/invoice/status/change/" + invoice_id,
+            type: "POST",
+            data: formData,
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                if (response.success) {
+                    $("form")[0].reset();
+                    $("#invoiceTableContainer").load(location.href + " #invoiceTableContainer > *");
+                    // Swal.fire({
+                    //     text: `${response.message}`,
+                    //     icon: "success",
+                    //     showCancelButton: false,
+                    //     showDenyButton: true,
+                    //     confirmButtonText: "ok",
+                    //     denyButtonText: "Cancel",
+                    // }).then((result) => {
+                    //     location.href = "/admin/invoice-list";
+                    // });
+                } else if (response.error) {
+                    // $("form")[0].reset();
+                    Swal.fire({
+                        text: `${response.message}`,
+                        icon: "error",
+                    });
+                }
+            },
+            error: function (xhr) {
+               console.log(xhr);
+            },
+        });
+    });
+
+    $(document).on("click", "#invoice_status_btn", function () {
+        const invoiceId = $(this).data("id");
+        $("#invoice_id").val(invoiceId);
+    });
 });
