@@ -108,4 +108,77 @@ document.addEventListener("DOMContentLoaded", function () {
             },
         });
     });
+
+    $("#status_change_btn").on("click", function (e) {
+        e.preventDefault();
+        let formData = new FormData($("#statusChangeForm")[0]);
+        console.log("formData", formData);
+        let invoice_id = $("#invoice_id").val();
+
+        $.ajax({
+            url: "/admin/invoice/status/change/" + invoice_id,
+            type: "POST",
+            data: formData,
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                if (response.success) {
+                    $("form")[0].reset();
+                    $("#invoiceTableContainer").load(location.href + " #invoiceTableContainer > *");
+
+                    // $(".invalid-feedback").remove(); // remove old errors
+                    // $(".is-invalid").removeClass("is-invalid");
+                    // Swal.fire({
+                    //     text: `${response.message}`,
+                    //     icon: "success",
+                    //     showCancelButton: false,
+                    //     showDenyButton: true,
+                    //     confirmButtonText: "ok",
+                    //     denyButtonText: "Cancel",
+                    // }).then((result) => {
+                    //     location.href = "/admin/invoice-list";
+                    // });
+                } else if (response.error) {
+                    // $("form")[0].reset();
+                    Swal.fire({
+                        text: `${response.message}`,
+                        icon: "error",
+                    });
+                }
+            },
+            error: function (xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.errors;
+                    $(".alert-danger").remove(); // remove old errors
+                    $.each(errors, function (key, value) {
+                        let formattedKey =
+                            key
+                                .replace(/\.(\d+)\./g, "[$1][")
+                                .replace(/\./g, "][") + "]";
+                        let input = $(`[name="${formattedKey}"]`);
+                        console.log("input", input);
+                        if (input.length > 0) {
+                            input.addClass("is-invalid");
+                            input.after(
+                                `<div class="invalid-feedback d-block">${value[0]}</div>`
+                            );
+                        } else {
+                            // For general/global errors (like 'items' or 'quantity')
+                            $("#invoiceForm").prepend(
+                                `<div class="alert alert-danger mb-3">${value[0]}</div>`
+                            );
+                        }
+                    });
+                }
+            },
+        });
+    });
+
+    $(document).on("click", "#invoice_status_btn", function () {
+        const invoiceId = $(this).data("id");
+        $("#invoice_id").val(invoiceId);
+    });
 });

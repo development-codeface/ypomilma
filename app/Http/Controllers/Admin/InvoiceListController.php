@@ -54,7 +54,7 @@ class InvoiceListController extends Controller
      *
      * @return void
      */
-    public function statusChange($invoice_id)
+    public function statusChange(Request $request, $invoice_id)
     {
         $invoice = Invoice::find($invoice_id);
 
@@ -62,20 +62,28 @@ class InvoiceListController extends Controller
         $account = \App\Models\Account::where('dairy_id', $invoice->dairy_id)->first();
 
         if (!$account) {
-            return redirect()->back()->with('error', 'No account found for this dairy.');
+            return response()->json(['error' => true, 'message' => 'No account found for this dairy.']);
         }
 
         $amount = $invoice->total_amount;
 
         if ($account->main_balance < $amount) {
-            return redirect()->back()->with('error', 'Insufficient main balance to record this transaction.');
+            return response()->json(['error' => true, 'message' => 'Insufficient main balance to record this transaction.']);
         }
 
         $account->main_balance -= $amount;
         $account->save();
 
+        $delivered_date = $request->date;
+
+        if ($delivered_date == null) {
+            $delivered_date = Carbon::now()->format('Y-m-d');
+        }
+
         if ($invoice) {
             $invoice->status = 'delivered';
+            $invoice->delivered_date = $delivered_date;
+            $invoice->invoice_no =  $request->invoice_no;
             $invoice->save();
         }
 
@@ -105,7 +113,6 @@ class InvoiceListController extends Controller
                 'status' => 'sold',
             ]);
         }
-
-        return redirect()->back()->with('success', 'Invoice status changed successfully.');
+        return response()->json(['success' => true, 'message' => 'Invoice status changed successfully.']);
     }
 }

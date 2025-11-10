@@ -148,12 +148,6 @@ class AssetController extends Controller
         foreach ($items as $index => $item) {
             $asset = Assets::with('product')->find($item['asset_id']);
 
-            // if (!$asset) {
-            //     $failedIndex = $index;
-            //     $errorMessage = "Invalid product selected at index {$index}.";
-            //     break;
-            // }
-
             $quantity = $item['quantity'];
             $unitPrice = $item['unit_price'];
             $discount = $item['discount'] ?? 0;

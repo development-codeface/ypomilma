@@ -10,7 +10,7 @@ class Invoice extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id', 'dairy_id', 'vendor_id', 'discount', 'total_amount', 'status'
+        'id', 'dairy_id', 'vendor_id', 'discount', 'total_amount', 'status','delivered_date','invoice_no'
     ];
 
     public function items()
