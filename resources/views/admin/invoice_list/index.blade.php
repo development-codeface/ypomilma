@@ -141,7 +141,7 @@
             <div class="modal-content">
                 <form id="statusChangeForm">
                     @csrf
-                    <input type="text" name="invoice_id" id="invoice_id">
+                    <input type="hidden" name="invoice_id" id="invoice_id">
                     <div class="modal-header">
                         <h5 class="modal-title">Status Change</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
