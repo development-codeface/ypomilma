@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\ExpenseItemController;
 use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\TransactionReportController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\HeadOfficeFundController;
 // Auth/Profile Controllers
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Admin\InvoiceListController;
@@ -43,6 +44,8 @@ Route::group([
     //Dashboard
     Route::get('dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
+
+    Route::resource('headoffices', HeadOfficeFundController::class)->names('headoffices');
 
     // Roles
     Route::delete('roles/destroy', [RolesController::class, 'massDestroy'])->name('roles.massDestroy');

@@ -31,7 +31,7 @@
 
         <div class="row mb-3">
             <div class="col-md-4">
-                <strong>Invoice ID:</strong> {{ $invoice->id }}
+                <strong>Invoice No:</strong> {{ $invoice->invoice_no }}
             </div>
             <div class="col-md-4">
                 {{-- Status could go here --}}

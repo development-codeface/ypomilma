@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FundAllocation;
 use App\Models\Dairy;
 use App\Models\Transactions;
+use App\Models\HeadOfficeFund;
 use App\Models\Account;
 use Illuminate\Http\Request;
 use Gate;
@@ -51,7 +52,7 @@ class FundAllocationController extends Controller
         return view('admin.fund_allocations.create', compact('dairies'));
     }
 
-    public function store(Request $request)
+    public function storeorg(Request $request)
     {
         $request->validate([
             'dairy_id' => 'required|exists:dairies,id',
@@ -99,6 +100,78 @@ class FundAllocationController extends Controller
         return redirect()->route('admin.fund_allocations.index')
             ->with('success', 'Fund allocation created successfully.');
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'dairy_id' => 'required|exists:dairies,id',
+            'amount' => 'required|numeric|min:0.01',
+            'allocation_date' => 'required|date',
+            'financial_year' => 'required|string',
+            'remarks' => 'nullable|string',
+        ]);
+
+        // 🔹 Fetch Head Office balance for the selected year
+        $headOffice = HeadOfficeFund::where('financial_year', $request->financial_year)->first();
+
+        if (!$headOffice) {
+            return back()->withErrors([
+                'financial_year' => 'No Head Office account found for the selected financial year.',
+            ])->withInput();
+        }
+
+        // 🔹 Calculate total amount already allocated for that year
+        $alreadyAllocated = FundAllocation::where('financial_year', $request->financial_year)->sum('amount');
+
+        // 🔹 Calculate available balance
+        $availableBalance = $headOffice->amount - $alreadyAllocated;
+
+        // 🔹 Check if requested amount is within available funds
+        if ($request->amount > $availableBalance) {
+            return back()->withErrors([
+                'amount' => "Insufficient funds in Head Office account for {$request->financial_year}. 
+                            Available balance: " . number_format($availableBalance, 2),
+            ])->withInput();
+        }
+
+        // ✅ Proceed if balance is sufficient
+        DB::transaction(function () use ($request) {
+            // 1️⃣ Create Fund Allocation
+            $fund = FundAllocation::create([
+                'dairy_id' => $request->dairy_id,
+                'amount' => $request->amount,
+                'allocation_date' => $request->allocation_date,
+                'financial_year' => $request->financial_year,
+                'remarks' => $request->remarks,
+                'status' => 'approved',
+            ]);
+
+            // 2️⃣ Create Transaction Entry
+            Transactions::create([
+                'dairy_id' => $request->dairy_id,
+                'type' => 'credit',
+                'amount' => $request->amount,
+                'description' => 'Fund allocation received',
+                'reference_id' => $fund->id,
+                'transaction_date' => $request->allocation_date,
+            ]);
+
+            // 3️⃣ Update or Create Account Record
+            $account = Account::firstOrNew([
+                'dairy_id' => $request->dairy_id,
+            ]);
+
+            $account->main_balance = ($account->exists)
+                ? $account->main_balance + $request->amount
+                : $request->amount;
+
+            $account->save();
+        });
+
+        return redirect()->route('admin.fund_allocations.index')
+            ->with('success', 'Fund allocation created successfully.');
+    }
+
 
     public function show($id)
     {

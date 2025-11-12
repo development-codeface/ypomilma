@@ -15,14 +15,14 @@
                                 </option>
                             @endforeach
                         </select>
-                        <select name="dairy_id" class="form-control" onchange="this.form.submit()">
+                        <!-- <select name="dairy_id" class="form-control" onchange="this.form.submit()">
                             <option value="">All Dairies</option>
                             @foreach($dairies as $dairy)
                                 <option value="{{ $dairy->id }}" {{ $selectedDairyId == $dairy->id ? 'selected' : '' }}>
                                     {{ $dairy->name }}
                                 </option>
                             @endforeach
-                        </select>
+                        </select> -->
                     </form>
                 </div>
                 <div class="card-body">
@@ -46,29 +46,23 @@
                             </div>
                         </div>
                     </div>
-                    @if($dairyData)
-                        <hr>
-                        <h5 class="mt-4">Details for {{ $dairies->firstWhere('id', $selectedDairyId)->name }}</h5>
-                        <div class="row mt-3 text-center">
-                            <div class="col-md-4">
-                                <div class="p-3 bg-light rounded shadow-sm">
-                                <h6>Allocated Fund</h6>
-                                <p class="fs-20 text-success">₹ {{ number_format($dairyData['fund_allocated'], 2) }}</p>
+                    @if($dairySummaries)
+                     {{-- INDIVIDUAL DAIRIES AS BLOCKS --}}
+                    <hr>
+                    <h5 class="mt-4 text-center mb-4">Each Dairy Overview</h5>
+                    <div class="row">
+                        @foreach($dairySummaries as $dairy)
+                            <div class="col-md-4 mb-4">
+                                <div class="p-3 bg-light rounded shadow-sm text-center">
+                                    <h5 class="fw-bold text-dark">{{ $dairy['name'] }}</h5>
+                                    <hr>
+                                    <p class="mb-1"><strong>Allocated:</strong> <span class="text-success">₹ {{ number_format($dairy['allocated'], 2) }}</span></p>
+                                    <p class="mb-1"><strong>Expenses:</strong> <span class="text-danger">₹ {{ number_format($dairy['expenses'], 2) }}</span></p>
+                                    <p class="mb-1"><strong>Balance:</strong> <span class="text-primary">₹ {{ number_format($dairy['balance'], 2) }}</span></p>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="p-3 bg-light rounded shadow-sm">
-                                <h6>Expenses</h6>
-                                <p class="fs-20 text-danger">₹ {{ number_format($dairyData['expenses'], 2) }}</p>
-                                </div>
-                            </div>
-                             <div class="col-md-4">
-                            <div class="p-3 bg-light rounded shadow-sm">
-                                <h5>Remaining Balance</h5>
-                                <h2 class="text-primary">₹ {{ number_format($dairyData['fund_allocated'] - $dairyData['expenses'], 2) }}</h2>
-                            </div>
-                        </div>
-                        </div>
+                        @endforeach
+                    </div>
                     @endif
                     <hr>
                     <canvas id="fundExpenseChartxx" height="100"></canvas>
@@ -143,37 +137,4 @@
     </div>
 </div>
 @endsection
-@section('scripts')
-@parent
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const ctx = document.getElementById('fundExpenseChart');
-    const chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {!! json_encode($chartData->pluck('name')) !!},
-            datasets: [
-                {
-                    label: 'Allocated Fund',
-                    data: {!! json_encode($chartData->pluck('funds_sum_amount')) !!},
-                    backgroundColor: 'rgba(33, 155, 99, 0.7)',
-                },
-                {
-                    label: 'Expenses',
-                    data: {!! json_encode($chartData->pluck('expenses_sum_amount')) !!},
-                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'bottom' },
-            },
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
-    });
-</script>
-@endsection
+

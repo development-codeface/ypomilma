@@ -78,13 +78,37 @@
 
 
             @can('fundallocation_access')
-                <li class="nav-item">
+
+            <li class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#">
+                        <i class="fi fi-br-home-location-alt nav-icon"></i>
+                        Fund Allocation
+                    </a>
+                    <ul class="nav-dropdown-items" style="margin-left:28px;">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.headoffices.index') }}"
+                                class="nav-link {{ request()->is('admin/headoffices*') ? 'active' : '' }}">
+                                <i class="fi fi-br-sack-dollar nav-icon"></i>
+                                Head Office Budget
+                            </a>
+                       </li>
+                         <li class="nav-item">
+                            <a href="{{ route('admin.fund_allocations.index') }}"
+                                class="nav-link {{ request()->is('admin/fund_allocations*') ? 'active' : '' }}">
+                                <i class="fi fi-br-sack-dollar nav-icon"></i>
+                                Dairy Fund
+                            </a>
+                        </li>
+                        
+                     </ul>
+                </li>
+                <!-- <li class="nav-item">
                     <a href="{{ route('admin.fund_allocations.index') }}"
                         class="nav-link {{ request()->is('admin/fund_allocations*') ? 'active' : '' }}">
                         <i class="fi fi-br-sack-dollar nav-icon"></i>
                         Fund Allocations
                     </a>
-                </li>
+                </li> -->
             @endcan
 
 
@@ -143,7 +167,7 @@
                     <a href="{{ route('admin.aggency-sale.index') }}"
                         class="nav-link {{ request()->is('admin/aggency-sale*') ? 'active' : '' }}">
                         <i class="fi fi-br-building nav-icon"></i>
-                        {{ trans('cruds.aggency_sale.title') }}
+                       Agency Sale
                     </a>
                 </li>
             @endcan

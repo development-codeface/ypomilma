@@ -74,19 +74,19 @@
             <table class="table table-bordered table-striped table-hover">
                 <thead>
                     <tr>
-                        <th>Invoice ID</th>
+                        <th>Invoice No</th>
                         <th>Dairy</th>
                         <th>Vendor</th>
                         <th>Total Amount</th>
                         <th>Status</th>
-                        <th>Created</th>
+                        <th>Delivered date</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($invoices as $invoice)
                         <tr>
-                            <td>{{ $invoice->id }}</td>
+                            <td>{{ $invoice->invoice_no }}</td>
                             <td>{{ $invoice->dairy->name ?? 'N/A' }}</td>
                             <td>{{ $invoice->vendor->name ?? 'N/A' }}</td>
                             <td>₹{{ number_format($invoice->total_amount, 2) }}</td>
@@ -99,8 +99,13 @@
                                     <span class="badge bg-danger">Cancelled</span>
                                 @endif
                             </td>
-                            <td>{{ $invoice->created_at->format('d-m-Y') }}</td>
-                            <td>
+                           <td>
+                                {{ $invoice->delivered_date 
+                                    ? \Carbon\Carbon::parse($invoice->delivered_date)->format('d-m-Y') 
+                                    : 'N/A' }}
+                            </td>
+
+                             <td>
                                 <a href="{{ route('admin.invoices.show', $invoice->id) }}" class="btn btn-xs btn-primary">
                                     <i class="fi fi-br-eye"></i>
                                 </a>

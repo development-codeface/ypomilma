@@ -15,176 +15,131 @@ use App\Models\User;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request)
-    {
-        $role = auth()->user()->roles->first();
-        $now = Carbon::now();
-        if ($role->title == 'SuperAdmin') {
+   public function index(Request $request)
+{
+    $role = auth()->user()->roles->first();
+    $now = Carbon::now();
 
-             $currentFinancialYearStart = $now->month >= 4
-                ? Carbon::create($now->year, 4, 1)
-                : Carbon::create($now->year - 1, 4, 1);
-            $currentFinancialYearEnd = $currentFinancialYearStart->copy()->addYear()->subDay();
+    if ($role->title == 'SuperAdmin') {
+     $currentFinancialYearStart = $now->month >= 4
+            ? Carbon::create($now->year, 4, 1)
+            : Carbon::create($now->year - 1, 4, 1);
+        $currentFinancialYearEnd = $currentFinancialYearStart->copy()->addYear()->subDay();
 
-            $selectedYear = $request->get('financial_year');
-
-            if (!$selectedYear) {
-                $selectedYear = $currentFinancialYearStart->format('Y') . '-' . $currentFinancialYearEnd->format('Y');
-            }
-
-            // Parse start/end for the selected financial year
-            [$startYear, $endYear] = explode('-', $selectedYear);
-            $financialYearStart = Carbon::create($startYear, 4, 1);
-            $financialYearEnd = Carbon::create($endYear, 3, 31, 23, 59, 59);
-
-            $selectedDairyId = $request->get('dairy_id');
-            // dd($selectedDairyId);
-
-            $totalAllocatedFund = FundAllocation::whereBetween('created_at', [$financialYearStart, $financialYearEnd])
-                ->sum('amount');
-
-             $totalExpenses = Transactions::whereBetween('created_at', [$financialYearStart, $financialYearEnd])
-             ->whereIn('type', ['debit', 'hold']) 
-             ->sum('amount');
-
-            $dairies = Dairy::select('id', 'name')->get();
-
-             $dairyData = null;
-            if ($selectedDairyId) {
-                $dairyData = [
-                    'fund_allocated' => FundAllocation::where('dairy_id', $selectedDairyId)
-                        ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
-                        ->sum('amount'),
-                    'expenses' => Transactions::where('dairy_id', $selectedDairyId)
-                        ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
-                         ->whereIn('type', ['debit', 'hold']) 
-                        ->sum('amount'),
-                    'invoices' => Invoice::where('dairy_id', $selectedDairyId)
-                        ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
-                        ->count(),
-                ];
-            }
-
-            $chartData = Dairy::select('name', 'id')
-                ->with(['fundAllocations' => function ($q) use ($financialYearStart, $financialYearEnd) {
-                    $q->select('dairy_id', DB::raw('SUM(amount) as total_fund'))
-                        ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
-                        ->groupBy('dairy_id');
-                }])
-                ->with(['expenses' => function ($q) use ($financialYearStart, $financialYearEnd) {
-                    $q->select('dairy_id', DB::raw('SUM(amount) as total_expense'))
-                        ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
-                        ->groupBy('dairy_id');
-                }])
-                ->get();
-
-            $financialYears = collect(range($now->year + 1, $now->year - 4))
-                ->map(function ($year) {
-                    return ($year - 1) . '-' . $year;
-                });
-        } else {
-            //  $currentFinancialYearStart = $now->month >= 4
-            //     ? Carbon::create($now->year, 4, 1)
-            //     : Carbon::create($now->year - 1, 4, 1);
-            // $currentFinancialYearEnd = $currentFinancialYearStart->copy()->addYear()->subDay();
-
-            // // Get selected financial year from request
-            // // $selectedYear = $request->get('financial_year');
-
-            // $currentYear = Carbon::now()->year;       // 2025
-            // $previousYear = Carbon::now()->subYear()->year;  // 2024
-
-            // $selectedYear = $previousYear . '-' . $currentYear;
-
-            // if (!$selectedYear) {
-            //     // Default: current financial year (e.g., 2025-2026)
-            //     $selectedYear = $currentFinancialYearStart->format('Y') . '-' . $currentFinancialYearEnd->format('Y');
-            // }
-
-            // // Parse start/end for the selected financial year
-            // [$startYear, $endYear] = explode('-', $selectedYear);
-            // $financialYearStart = Carbon::create($startYear, 4, 1);
-            // $financialYearEnd = Carbon::create($endYear, 3, 31, 23, 59, 59);
-
-             $currentFinancialYearStart = $now->month >= 4
-                    ? Carbon::create($now->year, 4, 1)
-                    : Carbon::create($now->year - 1, 4, 1);
-                $currentFinancialYearEnd = $currentFinancialYearStart->copy()->addYear()->subDay();
-
-                if ($now->month >= 4) {
-                    $selectedYear = $now->year . '-' . ($now->year + 1);   
-                } else {
-                    $selectedYear = ($now->year - 1) . '-' . $now->year; 
-                }
-
-                [$startYear, $endYear] = explode('-', $selectedYear);
-                $financialYearStart = Carbon::create($startYear, 4, 1);
-                $financialYearEnd = Carbon::create($endYear, 3, 31, 23, 59, 59);
-
-            // Get selected dairy
-            // $selectedDairyId = $request->get('dairy_id');
-            $user_id = auth()->user()->id;
-            $selectedDairyId = Dairy::where('admin_userid', $user_id)->value('id');
-
-            // Total allocated funds in selected financial year
-            $totalAllocatedFund = FundAllocation::whereBetween('created_at', [$financialYearStart, $financialYearEnd])
-                ->sum('amount');
-
-            // Total expenses in selected financial year
-            $totalExpenses = Transactions::whereBetween('created_at', [$financialYearStart, $financialYearEnd])
-               ->whereIn('type', ['debit', 'hold']) 
-                ->sum('amount');
-            // Dairy list
-            $dairies = Dairy::select('id', 'name')->get();
-
-            // Dairy-specific details (if selected)
-            $dairyData = null;
-            if ($selectedDairyId) {
-                $dairyData = [
-                    'fund_allocated' => FundAllocation::where('dairy_id', $selectedDairyId)
-                        ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
-                        ->sum('amount'),
-                     'expenses' => Transactions::where('dairy_id', $selectedDairyId)
-                        ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
-                         ->whereIn('type', ['debit', 'hold']) 
-                        ->sum('amount'),
-                    'invoices' => Invoice::where('dairy_id', $selectedDairyId)
-                        ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
-                        ->count(),
-                ];
-            }
-
-            // Dairy-wise chart data (for visualization)
-            $chartData = Dairy::select('name', 'id')
-                ->with(['fundAllocations' => function ($q) use ($financialYearStart, $financialYearEnd) {
-                    $q->select('dairy_id', DB::raw('SUM(amount) as total_fund'))
-                        ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
-                        ->groupBy('dairy_id');
-                }])
-                ->with(['expenses' => function ($q) use ($financialYearStart, $financialYearEnd) {
-                    $q->select('dairy_id', DB::raw('SUM(amount) as total_expense'))
-                        ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
-                        ->groupBy('dairy_id');
-                }])
-                ->get();
-
-            // Available financial years for dropdown (last 5 years)
-            $financialYears = collect(range($now->year + 1, $now->year - 4))
-                ->map(function ($year) {
-                    return ($year - 1) . '-' . $year;
-                });
+        $selectedYear = $request->get('financial_year');
+        if (!$selectedYear) {
+            $selectedYear = $currentFinancialYearStart->format('Y') . '-' . $currentFinancialYearEnd->format('Y');
         }
 
-        return view('admin.dashboard', compact(
-            'totalAllocatedFund',
-            'totalExpenses',
-            'dairies',
-            'selectedDairyId',
-            'dairyData',
-            'chartData',
-            'selectedYear',
-            'financialYears',
-            'role'
-        ));
+        [$startYear, $endYear] = explode('-', $selectedYear);
+        $financialYearStart = Carbon::create($startYear, 4, 1);
+        $financialYearEnd = Carbon::create($endYear, 3, 31, 23, 59, 59);
+
+        $selectedDairyId = $request->get('dairy_id');
+
+        $totalAllocatedFund = FundAllocation::whereBetween('created_at', [$financialYearStart, $financialYearEnd])
+            ->sum('amount');
+
+        $totalExpenses = Transactions::whereBetween('created_at', [$financialYearStart, $financialYearEnd])
+            ->whereIn('type', ['debit', 'hold'])
+            ->sum('amount');
+
+        $totalBalance = $totalAllocatedFund - $totalExpenses;
+
+        $dairies = Dairy::select('id', 'name')->get();
+         $dairyData = null;
+        $dairySummaries = [];
+        foreach ($dairies as $dairy) {
+            $allocated = FundAllocation::where('dairy_id', $dairy->id)
+                ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
+                ->sum('amount');
+
+            $expenses = Transactions::where('dairy_id', $dairy->id)
+                ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
+                ->whereIn('type', ['debit', 'hold'])
+                ->sum('amount');
+
+            $balance = $allocated - $expenses;
+
+            $dairySummaries[] = [
+                'id' => $dairy->id,
+                'name' => $dairy->name,
+                'allocated' => $allocated,
+                'expenses' => $expenses,
+                'balance' => $balance,
+            ];
+        }
+
+        $chartData = collect($dairySummaries);
+
+         $financialYears = collect(range($now->year + 1, $now->year - 4))
+            ->map(fn($year) => ($year - 1) . '-' . $year);
+    } 
+    else {
+        // 🧑‍💼 Non-SuperAdmin (Dairy Admin)
+        $currentFinancialYearStart = $now->month >= 4
+            ? Carbon::create($now->year, 4, 1)
+            : Carbon::create($now->year - 1, 4, 1);
+        $currentFinancialYearEnd = $currentFinancialYearStart->copy()->addYear()->subDay();
+
+        if ($now->month >= 4) {
+            $selectedYear = $now->year . '-' . ($now->year + 1);
+        } else {
+            $selectedYear = ($now->year - 1) . '-' . $now->year;
+        }
+
+        [$startYear, $endYear] = explode('-', $selectedYear);
+        $financialYearStart = Carbon::create($startYear, 4, 1);
+        $financialYearEnd = Carbon::create($endYear, 3, 31, 23, 59, 59);
+
+        $user_id = auth()->user()->id;
+        $selectedDairyId = Dairy::where('admin_userid', $user_id)->value('id');
+
+        $totalAllocatedFund = FundAllocation::whereBetween('created_at', [$financialYearStart, $financialYearEnd])
+            ->sum('amount');
+
+        $totalExpenses = Transactions::whereBetween('created_at', [$financialYearStart, $financialYearEnd])
+            ->whereIn('type', ['debit', 'hold'])
+            ->sum('amount');
+
+        $totalBalance = $totalAllocatedFund - $totalExpenses;
+
+        $dairies = Dairy::select('id', 'name')->get();
+         $dairySummaries = [];
+        $dairyData = null;
+        if ($selectedDairyId) {
+            $dairyData = [
+                'fund_allocated' => FundAllocation::where('dairy_id', $selectedDairyId)
+                    ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
+                    ->sum('amount'),
+                'expenses' => Transactions::where('dairy_id', $selectedDairyId)
+                    ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
+                    ->whereIn('type', ['debit', 'hold'])
+                    ->sum('amount'),
+                'invoices' => Invoice::where('dairy_id', $selectedDairyId)
+                    ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
+                    ->count(),
+            ];
+        }
+
+        $chartData = [];
+        $financialYears = collect(range($now->year + 1, $now->year - 4))
+            ->map(fn($year) => ($year - 1) . '-' . $year);
     }
+
+    return view('admin.dashboard', compact(
+        'totalAllocatedFund',
+        'totalExpenses',
+        'totalBalance',
+        'dairies',
+        'selectedDairyId',
+        'dairyData',
+        'dairySummaries',
+        'chartData',
+        'selectedYear',
+        'financialYears',
+        'role'
+    ));
+}
+
 }

@@ -110,7 +110,7 @@ class InvoiceListController extends Controller
                 'sold_price' => 0,
                 'discount' => $item->discount,
                 'invoice_refno' => $item->invoice_id,
-                'status' => 'sold',
+                'status' => 'available',
             ]);
         }
         return response()->json(['success' => true, 'message' => 'Invoice status changed successfully.']);
