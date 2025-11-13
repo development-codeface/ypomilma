@@ -11,31 +11,31 @@
             </li>
 
             @can('user_manage_access')
-            <li class="nav-item nav-dropdown">
-                <a class="nav-link nav-dropdown-toggle" href="#">
-                    <i class="fi fi-br-user-gear nav-icon"></i>
-                    {{ trans('cruds.userManagement.title') }}
-                </a>
-                <ul class="nav-dropdown-items" style="margin-left:28px;">
-                    @can('permission_access')
-                        <li class="nav-item">
-                            <a href="{{ route('admin.permissions.index') }}"
-                                class="nav-link {{ request()->is('admin/permissions*') ? 'active' : '' }}">
-                                {{ trans('cruds.permission.title') }}
-                            </a>
-                        </li>
-                    @endcan
+                <li class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#">
+                        <i class="fi fi-br-user-gear nav-icon"></i>
+                        {{ trans('cruds.userManagement.title') }}
+                    </a>
+                    <ul class="nav-dropdown-items" style="margin-left:28px;">
+                        @can('permission_access')
+                            <li class="nav-item">
+                                <a href="{{ route('admin.permissions.index') }}"
+                                    class="nav-link {{ request()->is('admin/permissions*') ? 'active' : '' }}">
+                                    {{ trans('cruds.permission.title') }}
+                                </a>
+                            </li>
+                        @endcan
 
-                    @can('role_access')
-                        <li class="nav-item">
-                            <a href="{{ route('admin.roles.index') }}"
-                                class="nav-link {{ request()->is('admin/roles*') ? 'active' : '' }}">
-                                {{ trans('cruds.role.title') }}
-                            </a>
-                        </li>
-                    @endcan
-                </ul>
-            </li>
+                        @can('role_access')
+                            <li class="nav-item">
+                                <a href="{{ route('admin.roles.index') }}"
+                                    class="nav-link {{ request()->is('admin/roles*') ? 'active' : '' }}">
+                                    {{ trans('cruds.role.title') }}
+                                </a>
+                            </li>
+                        @endcan
+                    </ul>
+                </li>
             @endcan
 
             @can('user_access')
@@ -138,12 +138,22 @@
                 </li>
             @endcan
 
-               @can('aggency_sale_access')
+            @can('agency_sale_access')
                 <li class="nav-item">
                     <a href="{{ route('admin.aggency-sale.index') }}"
                         class="nav-link {{ request()->is('admin/aggency-sale*') ? 'active' : '' }}">
                         <i class="fi fi-br-building nav-icon"></i>
                         {{ trans('cruds.aggency_sale.title') }}
+                    </a>
+                </li>
+            @endcan
+
+              @can('agency_access')
+                <li class="nav-item">
+                    <a href="{{ route('admin.aggency.index') }}"
+                        class="nav-link {{ request()->is('admin/aggency*') ? 'active' : '' }}">
+                        <i class="fi fi-br-building nav-icon"></i>
+                        {{ trans('cruds.agency.title') }}
                     </a>
                 </li>
             @endcan

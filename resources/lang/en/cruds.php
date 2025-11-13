@@ -462,6 +462,19 @@ return [
             'action'                => 'Actions',
         ],
     ],
+    'agency'          => [
+        'title'          => 'Agency',
+        'title_singular' => 'Agency',
+        'fields'         => [
+            'id'                   => 'ID',
+            'id_helper'            => '',
+            'name'              => 'Name',
+            'contact_no'             => 'Contact No',
+            'address'               => 'Address',
+            'email'                 => 'Email',
+            'action'                => 'Actions',
+        ],
+    ],
 
     'report'    => [
         'title'          => 'Insights',
