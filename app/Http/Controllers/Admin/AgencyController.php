@@ -18,7 +18,7 @@ class AgencyController extends Controller
         $dairy_id = Dairy::where('admin_userid', $user_id)->pluck('id')->first();
         $agency_data = Agency::query();
         $data['agency'] = $agency_data->where('dairy_id', $dairy_id)->orderBy('id', 'DESC')->paginate(15);
-        return view('admin.agency.index',$data);
+        return view('admin.agency.index', $data);
     }
 
     /**
@@ -43,8 +43,12 @@ class AgencyController extends Controller
 
         $user_id = auth()->user()->id;
         $dairy_id = Dairy::where('admin_userid', $user_id)->pluck('id')->first();
+        $lastAgency = Agency::lockForUpdate()->orderBy('id', 'desc')->first();
+        $num = $lastAgency ? (int) substr($lastAgency->id, 3) + 1 : 1;
+        $agencyCode = 'AGENCY' . str_pad($num, 5, '0', STR_PAD_LEFT);
         // Store the agency data
         Agency::create([
+            'agency_code' => $agencyCode,
             'name' => $request->input('name'),
             'address' => $request->input('address'),
             'contact_no' => $request->input('contact_no'),
@@ -76,16 +80,15 @@ class AgencyController extends Controller
      */
     public function update(Request $request, string $id)
     {
-          $request->validate([
+        $request->validate([
             'name'     => 'required|string|max:255',
             'address'     => 'required',
             'contact_no'     => 'required',
-            'email'     => 'required|email|unique:agencies,email,'.$id,
+            'email'     => 'required|email|unique:agencies,email,' . $id,
         ]);
 
-         $user_id = auth()->user()->id;
+        $user_id = auth()->user()->id;
         $dairy_id = Dairy::where('admin_userid', $user_id)->pluck('id')->first();
-
         // Update the agency data
         $agency = Agency::findOrFail($id);
         $agency->update([
@@ -97,7 +100,6 @@ class AgencyController extends Controller
         ]);
 
         return redirect()->route('admin.aggency.index')->with('success', 'Agency updated successfully.');
-
     }
 
     /**

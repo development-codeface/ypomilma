@@ -17,5 +17,6 @@ class Agency extends Model
         'contact_no',
         'address',
         'dairy_id',
+        'agency_code'
     ];
 }

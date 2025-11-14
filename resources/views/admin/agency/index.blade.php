@@ -46,6 +46,7 @@
                     <thead>
                         <tr>
                             <th>{{ trans('cruds.agency.fields.id') }}</th>
+                            <th>{{ trans('cruds.agency.fields.agency_code') }}</th>
                             <th>{{ trans('cruds.agency.fields.name') }}</th>
                             <th>{{ trans('cruds.agency.fields.email') }}</th>
                             <th>{{ trans('cruds.agency.fields.address') }}</th>
@@ -60,6 +61,7 @@
                         @forelse($agency as $value)
                             <tr>
                                 <td>{{ $i++ }}</td>
+                                <td>{{ $value->agency_code ?? 'N/A' }}</td>
                                 <td>{{ $value->name ?? 'N/A' }}</td>
                                 <td>{{ $value->email ?? 'N/A' }}</td>
                                 <td>{{ $value->address ?? 'N/A' }}</td>

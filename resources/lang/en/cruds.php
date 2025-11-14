@@ -472,6 +472,7 @@ return [
             'contact_no'             => 'Contact No',
             'address'               => 'Address',
             'email'                 => 'Email',
+            'agency_code'          => 'Agency Code',
             'action'                => 'Actions',
         ],
     ],
