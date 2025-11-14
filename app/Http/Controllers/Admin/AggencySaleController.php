@@ -21,6 +21,7 @@ class AggencySaleController extends Controller
         $user_id = auth()->user()->id;
         $dairy_id = Dairy::where('admin_userid', $user_id)->pluck('id')->first();
         $agency_sale = AggencySale::query();
+        
         if (request()->has('name') && !empty(request()->name)) {
             $agency_sale->where('name', request()->name);
         }

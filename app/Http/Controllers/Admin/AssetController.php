@@ -11,6 +11,7 @@ use App\Models\AggencySale;
 use App\Models\Invoice;
 use App\Models\Assets;
 use App\Models\Account;
+use App\Models\Agency;
 use Illuminate\Support\Facades\DB;
 
 
@@ -63,6 +64,7 @@ class AssetController extends Controller
     {
         $user_id = auth()->user()->id;
         $dairy_id = Dairy::where('admin_userid', $user_id)->pluck('id');
+        $data['agency_name'] = Agency::where('dairy_id', $dairy_id)->get();
         $data['assets'] = Assets::with('product')->where('dairy_id', $dairy_id)->get();
         return view('admin.asset_manage.create', $data);
     }
@@ -97,9 +99,7 @@ class AssetController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'address'     => 'required',
-            'contact_no'     => 'required',
+            'agency_name'     => 'required',
         ]);
 
         $data = $request->all();
@@ -140,9 +140,7 @@ class AssetController extends Controller
         $agency_sale = AggencySale::create([
             'dairy_id' => $dairy_id,
             'invoice_id' => $invoiceId,
-            'name' => $data['name'],
-            'address' => $data['address'],
-            'contact_no' => $data['contact_no'],
+            'agency_id' => $data['agency_name'],
         ]);
 
         foreach ($items as $index => $item) {
