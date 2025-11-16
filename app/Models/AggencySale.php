@@ -9,9 +9,7 @@ class AggencySale extends Model
     //fields that can be mass assigned
     protected $fillable = [
         'id',
-        'name',
-        'contact_no',
-        'address',
+        'agency_id',
         'invoice_id',
         'total_amount',
         'dairy_id'

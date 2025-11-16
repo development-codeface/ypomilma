@@ -24,6 +24,7 @@ use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Admin\InvoiceListController;
 use App\Http\Controllers\Admin\AssetController;
 use App\Http\Controllers\Admin\AggencySaleController;
+use App\Http\Controllers\Admin\AgencyController;
 
 Route::redirect('/', '/login');
 
@@ -91,6 +92,12 @@ Route::group([
     Route::get('aggency-sale', [AggencySaleController::class, 'index'])->name('aggency-sale.index');
     Route::get('aggency-sale/show/{id}', [AggencySaleController::class, 'show'])->name('aggency-sale.show');
 
+    Route::get('aggency', [AgencyController::class, 'index'])->name('aggency.index');
+    Route::get('aggency/create', [AgencyController::class, 'create'])->name('aggency.create');
+    Route::post('aggency/store', [AgencyController::class, 'store'])->name('aggency.store');
+    Route::get('aggency/edit/{id}', [AgencyController::class, 'edit'])->name('aggency.edit');
+    Route::post('aggency/update/{id}', [AgencyController::class, 'update'])->name('aggency.update');
+    Route::delete('aggency/destroy/{id}', [AgencyController::class, 'destroy'])->name('aggency.destroy');
 
     Route::resource('expenses', ExpenseController::class);
     Route::get('expenses/items/{categoryId}', [ExpenseController::class, 'getItemsByCategory'])->name('expenses.items');

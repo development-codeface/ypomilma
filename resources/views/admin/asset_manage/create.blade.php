@@ -10,29 +10,43 @@
                 @csrf
                 <div class="row">
                     {{-- Dairy --}}
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         <label class="required"
                             for="name">{{ trans('cruds.asset_management.form_fields.name') }}</label>
-                        <input class="form-control " type="text"
-                            name="name" id="name" value="{{ old('name', '') }}">
-
+                        <input class="form-control " type="text" name="name" id="name"
+                            value="{{ old('name', '') }}">
                     </div>
-
                     <div class="form-group">
                         <label class="required"
                             for="address">{{ trans('cruds.asset_management.form_fields.address') }}</label>
-                        <textarea class="form-control " name="address" id="address"
-                            rows="3">{{ old('address', '') }}</textarea>
+                        <textarea class="form-control " name="address" id="address" rows="3">{{ old('address', '') }}</textarea>
 
                     </div>
                     <div class="form-group">
                         <label class="required"
                             for="contact_no">{{ trans('cruds.asset_management.form_fields.contact_no') }}</label>
-                        <input class="form-control" type="text"
-                            name="contact_no" id="contact_no" value="{{ old('contact_no', '') }}">
+                        <input class="form-control" type="text" name="contact_no" id="contact_no"
+                            value="{{ old('contact_no', '') }}">
 
+                    </div> --}}
+
+                    <div class="form-group">
+                        <label for="agency_name">Agency Name</label>
+                        <select class="form-control {{ $errors->has('agency_name') ? 'is-invalid' : '' }}"
+                            name="agency_name" id="agency_name">
+                            <option value="">-- Select Agency --</option>
+                            @foreach ($agency_name as $agency)
+                                <option value="{{ $agency->id }}"
+                                    {{ old('agency_name') == $agency->id ? 'selected' : '' }}>
+                                    {{ $agency->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @if ($errors->has('agency_name'))
+                            <div class="invalid-feedback">{{ $errors->first('agency_name') }}</div>
+                        @endif
                     </div>
-
+                   
                     {{-- Invoice Items --}}
                     <div class="col-md-12 mt-12">
                         <h5>Invoice Items</h5>
