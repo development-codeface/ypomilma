@@ -15,5 +15,8 @@ class AggencySale extends Model
         'dairy_id'
     ];
 
-
+    public function agency()
+    {
+        return $this->belongsTo(Agency::class, 'agency_id');
+    }
 }

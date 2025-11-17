@@ -23,7 +23,7 @@
                         <select name="name" id="name" class="form-control">
                             <option value="">All</option>
                             @foreach($agency_name as $agency_names)
-                            <option value="{{ $agency_names->name  }}" {{ request('name') == $agency_names->name   ? 'selected' : '' }}>{{ $agency_names->name }}
+                            <option value="{{ $agency_names->id  }}" {{ request('name') == $agency_names->id   ? 'selected' : '' }}>{{ $agency_names->name }}
                             </option>
                             @endforeach
                         </select>
@@ -72,8 +72,8 @@
                             <tr>
                                  <td>{{ $i++ }}</td>
                                 <td>{{ $value->invoice_id ?? 'N/A' }}</td>
-                                <td>{{ $value->name ?? 'N/A' }}</td>
-                                <td>{{ $value->contact_no ?? 'N/A' }}</td>
+                                <td>{{ $value->agency->name ?? 'N/A' }}</td>
+                                <td>{{ $value->agency->contact_no ?? 'N/A' }}</td>
                                 <td>{{ $value->total_amount ?? 'N/A' }}</td>
                                 <td>{{ $value->created_at ?? 'N/A' }}</td>
                                 <td>
