@@ -9,10 +9,14 @@ use App\Traits\AssetManage;
 use App\Models\AggencyBill;
 use App\Models\AggencySale;
 use App\Models\Invoice;
+use App\Models\Expense;
 use App\Models\Assets;
 use App\Models\Account;
 use App\Models\Agency;
+use App\Models\Transactions;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
+use Gate;
 
 
 class AssetController extends Controller
@@ -31,6 +35,7 @@ class AssetController extends Controller
      */
     public function index(Request $request)
     {
+        abort_if(Gate::denies('asset_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $assets_list = Assets::with(['dairy', 'product']);
 
         if ($request->status) {
@@ -175,8 +180,9 @@ class AssetController extends Controller
             }
 
             $account = Account::where('dairy_id', $dairy_id)->first();
-            $account->main_balance = $account->main_balance + $itemTotal;
+            $account->main_balance = $account->main_balance - $itemTotal;
             $account->save();
+     
 
             $quantity_asset = Assets::where('id', $item['asset_id'])->first();
             $quantity_asset->quantity = $quantity_asset->quantity - $quantity;
@@ -196,6 +202,36 @@ class AssetController extends Controller
                 'gst_amount' => $gstAmount,
                 'discount' => $discount,
                 'total' => $itemTotal,
+            ]);
+
+                $product = $asset->product;
+                $expenseCategory = $product->category_id; // Assuming each product has an expense category
+
+                $expenseData = [
+                    'expensecategory_id' => $expenseCategory,
+                    'expense_item' => $product->item_code,
+                    'product_id' => $product->id,
+                    'rate' => $unitPrice,
+                    'quantity' => $quantity,
+                    'amount' => $itemTotal,
+                    'dairy_id' => $dairy_id,
+                    'description' => 'Agency sale expense for product ' . $product->productname,
+                ];
+
+             $expense = Expense::create($expenseData);
+
+         // Create transaction
+            Transactions::create([
+              'dairy_id'             => $dairy_id,
+                'fund_allocation_id'   => null,
+                'expense_category_id'  => $expense->expensecategory_id,
+                'expense_id'           => $expense->id,
+                'type'                 => 'debit',
+                'amount'               => $expense->amount,
+                'reference_no'         => 'EXP-' . $expense->id,
+                'description'          => 'Expense: ' . $expense->expense_item.'(Invoice)',
+                'status'               => 'completed',
+                'transaction_date'     => now(),
             ]);
 
             $savedIndices[] = $index;

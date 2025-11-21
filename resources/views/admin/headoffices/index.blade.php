@@ -15,6 +15,7 @@
                     <th>#</th>
                     <th>Financial Year</th>
                     <th>Amount</th>
+                    <th>Available Balance</th>
                     <th>Created</th>
                     <th>Action</th>
                 </tr>
@@ -25,14 +26,15 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $office->financial_year }}</td>
                         <td>{{ number_format($office->amount, 2) }}</td>
+                        <td>{{ number_format($office->balance_amount, 2) }}</td>
                         <td>{{ $office->created_at->format('Y-m-d') }}</td>
                         <td>
                             <a href="{{ route('admin.headoffices.edit', $office->id) }}" class="btn btn-primary btn-sm">Edit</a>
-                            <form action="{{ route('admin.headoffices.destroy', $office->id) }}" method="POST" style="display:inline-block;">
+                            <!-- <form action="{{ route('admin.headoffices.destroy', $office->id) }}" method="POST" style="display:inline-block;">
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn btn-danger btn-sm" onclick="return confirm('Delete this record?')">Delete</button>
-                            </form>
+                            </form> -->
                         </td>
                     </tr>
                 @empty

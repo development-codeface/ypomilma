@@ -112,16 +112,15 @@
             @endcan
 
 
-            @can('invoice_access')
+            
                 <li class="nav-item">
                     <a href="{{ route('admin.invoices.index') }}"
                         class="nav-link {{ request()->is('admin/invoices*') ? 'active' : '' }}">
                         <i class="fi fi-br-file-invoice nav-icon"></i>
-                        {{ trans('cruds.invoice.title') }}
+                       Purchase Order
                     </a>
                 </li>
-            @endcan
-
+           
 
             @if (Gate::check('product_access') || Gate::check('vendor_access'))
                 <li class="nav-item nav-dropdown">
@@ -151,36 +150,40 @@
                 </li>
             @endif
 
-
-            @can('asset_access')
-                <li class="nav-item">
-                    <a href="{{ route('admin.asset-management.index') }}"
-                        class="nav-link {{ request()->is('admin/asset-management*') ? 'active' : '' }}">
-                        <i class="fi fi-br-building nav-icon"></i>
-                        {{ trans('cruds.asset_management.title') }}
+            @if (Gate::check('product_access') )
+                <li class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#">
+                        <i class="fi fi-br-box nav-icon"></i>
+                       Asset Management
                     </a>
-                </li>
-            @endcan
+                    <ul class="nav-dropdown-items" style="margin-left:28px;">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.asset-management.index') }}"
+                                class="nav-link {{ request()->is('admin/asset-management*') ? 'active' : '' }}">
+                                <i class="fi fi-br-building nav-icon"></i>
+                                Assets
+                            </a>
+                        </li>
 
-            @can('agency_sale_access')
-                <li class="nav-item">
-                    <a href="{{ route('admin.aggency-sale.index') }}"
-                        class="nav-link {{ request()->is('admin/aggency-sale*') ? 'active' : '' }}">
-                        <i class="fi fi-br-building nav-icon"></i>
-                       Agency Sale
-                    </a>
+                       <li class="nav-item">
+                            <a href="{{ route('admin.aggency.index') }}"
+                                class="nav-link {{ request()->is('admin/aggency*') ? 'active' : '' }}">
+                                <i class="fi fi-br-building nav-icon"></i>
+                                {{ trans('cruds.agency.title') }}
+                            </a>
+                        </li>
+                         <li class="nav-item">
+                            <a href="{{ route('admin.aggency-sale.index') }}"
+                                class="nav-link {{ request()->is('admin/aggency-sale*') ? 'active' : '' }}">
+                                <i class="fi fi-br-building nav-icon"></i>
+                            Agency Sale
+                            </a>
+                        </li>
+         
+                    </ul>
                 </li>
-            @endcan
+            @endif
 
-              @can('agency_access')
-                <li class="nav-item">
-                    <a href="{{ route('admin.aggency.index') }}"
-                        class="nav-link {{ request()->is('admin/aggency*') ? 'active' : '' }}">
-                        <i class="fi fi-br-building nav-icon"></i>
-                        {{ trans('cruds.agency.title') }}
-                    </a>
-                </li>
-            @endcan
 
 
             @if (Gate::check('expensecategory_access') ||
@@ -228,7 +231,7 @@
                 $user = auth()->user();
             @endphp
 
-            @can('dairy_invoice_access')
+            <!-- @can('dairy_invoice_access')
                 @if (strtolower($user->role_name) != 'superadmin')
                     <li class="nav-item">
                         <a href="{{ route('admin.invoice-list.index') }}"
@@ -238,18 +241,35 @@
                         </a>
                     </li>
                 @endif
-            @endcan
-
-
-            @can('transaction_access')
-                <li class="nav-item">
-                    <a href="{{ route('admin.transactions.index') }}"
-                        class="nav-link {{ request()->is('admin/transactions*') ? 'active' : '' }}">
-                        <i class="fi fi-br-chart-histogram nav-icon"></i>
-                        Transaction Report
+            @endcan -->
+              @if (Gate::check('transaction_access') || Gate::check('transaction_access'))
+                <li class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#">
+                        <i class="fi fi-br-box nav-icon"></i>
+                        Report
                     </a>
+                    <ul class="nav-dropdown-items" style="margin-left:28px;">
+
+                    @can('transaction_access')
+                        <li class="nav-item">
+                            <a href="{{ route('admin.transactions.index') }}"
+                                class="nav-link {{ request()->is('admin/transactions*') ? 'active' : '' }}">
+                                <i class="fi fi-br-chart-histogram nav-icon"></i>
+                                Transaction Report
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.expensereport.index') }}"
+                                class="nav-link {{ request()->is('admin/expensereport*') ? 'active' : '' }}">
+                                <i class="fi fi-br-chart-histogram nav-icon"></i>
+                            Expense Report
+                            </a>
+                        </li>
+                    @endcan
+                </ul>
                 </li>
-            @endcan
+            @endif
+
 
 
             @if (file_exists(app_path('Http/Controllers/Auth/ChangePasswordController.php')))

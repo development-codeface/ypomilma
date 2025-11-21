@@ -104,8 +104,20 @@
                                     <a href="{{ route('admin.fund_allocations.show', $allocation->id) }}" class="btn btn-xs btn-info">
                                         <i class="fi fi-br-eye"></i>
                                     </a>
+                                     <!-- Edit Button -->
+                                    <a href="{{ route('admin.fund_allocations.edit', $allocation->id) }}" 
+                                        class="btn btn-xs btn-warning">
+                                        <i class="fi fi-br-edit"></i>
+                                    </a>
+
+                                    <a href="{{ route('admin.fund_allocations.adjust', $allocation->id) }}" 
+                                        class="btn btn-xs btn-warning">
+                                        <i class="fi fi-br-coins"></i>
+                                        </a>
                                 </div>
                             </td>
+
+                            
                         </tr>
                     @empty
                         <tr>

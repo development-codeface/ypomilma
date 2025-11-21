@@ -109,39 +109,8 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    $("#status_change_btn").on("click", function (e) {
-        e.preventDefault();
-        let formData = new FormData($("#statusChangeForm")[0]);
-        console.log("formData", formData);
-        let invoice_id = $("#invoice_id").val();
+    $(document).on("click", ".invoice_status_btn", function () {
 
-        $.ajax({
-            url: "/admin/invoice/status/change/" + invoice_id,
-            type: "POST",
-            data: formData,
-            headers: {
-                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-            },
-            contentType: false,
-            processData: false,
-            success: function (res) {
-                if (res.success) {
-                    Swal.fire('Saved', res.message, 'success').then(() => {
-                        $("#invoice_modal").modal("hide");
-                        // reload invoice table area only
-                        $("#invoiceTableContainer").load(location.href + " #invoiceTableContainer > *");
-                    });
-                } else {
-                    Swal.fire('Error', res.message || 'Failed', 'error');
-                }
-            },
-            error: function (xhr) {
-               console.log(xhr);
-            },
-        });
-    });
-
-    $(document).on("click", "#invoice_status_btn", function () {
         let invoiceId = $(this).data("id");
         $("#invoice_id").val(invoiceId);
       //  alert(invoiceId);
@@ -169,49 +138,44 @@ document.addEventListener("DOMContentLoaded", function () {
         $("#invoice_modal").modal("show"); // ✅ Correct modal ID
     });
 
-    // Delivery history: open modal and load history
-    $(document).on("click", ".delivery-history-btn", function () {
-        let invoiceId = $(this).data('id');
-        $("#deliveryHistoryBody").html('<div class="text-center">Loading…</div>');
-        $("#deliveryHistoryModal").modal('show');
+    // 🟩 2. SAVE STATUS CHANGE
+    // CSRF FIX
+$.ajaxSetup({
+    headers: {
+        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+    }
+});
 
-        $.ajax({
-            url: "/admin/invoice/" + invoiceId + "/deliveries",
-            type: "GET",
-            success: function (res) {
-                if (!res.deliveries || res.deliveries.length === 0) {
-                    $("#deliveryHistoryBody").html('<div class="text-center">No deliveries found</div>');
-                    return;
-                }
+// SAVE STATUS CHANGE
+$(document).on("click", "#status_change_btn_new", function (e) {
 
-                let html = '<div class="list-group">';
-                res.deliveries.forEach(d => {
-                    html += `<div class="list-group-item mb-2">
-                        <div class="d-flex justify-content-between">
-                            <strong>${d.delivery_no}</strong>
-                            <small>${d.delivery_date ?? d.created_at}</small>
-                        </div>
-                        <table class="table table-sm mt-2">
-                            <thead><tr><th>Product</th><th>Qty</th><th>Warranty</th><th>Description</th></tr></thead>
-                            <tbody>`;
-                    (d.items || []).forEach(it => {
-                        // item product name might not be loaded; if not present show product_id
-                        html += `<tr>
-                            <td>${(it.product && it.product.productname) ? it.product.productname : it.product_id}</td>
-                            <td>${it.delivered_quantity}</td>
-                            <td>${it.warranty ?? '-'}</td>
-                            <td>${it.description ?? '-'}</td>
-                        </tr>`;
-                    });
-                    html += `</tbody></table></div>`;
-                });
-                html += '</div>';
-                $("#deliveryHistoryBody").html(html);
-            },
-            error: function () {
-                $("#deliveryHistoryBody").html('<div class="text-danger">Failed to load history</div>');
-            }
-        });
+    e.preventDefault();
+
+    let invoiceIdx = $("#invoice_id").val();
+    let formData = $("#statusChangeFormNew").serialize();
+
+    let invoiceId = "3";
+
+    $.ajax({
+        url: "/admin/invoice/status/change/" + invoiceId,
+        type: "POST",
+        data: formData,
+        success: function (res) {
+            Swal.fire({
+                icon: "success",
+                text: "Status updated successfully!"
+            }).then(() => {
+                location.reload();
+            });
+        },
+        error: function (xhr) {
+            console.log(xhr);
+            Swal.fire({
+                icon: "error",
+                text: "Something went wrong!"
+            });
+        }
     });
+});
 
 });

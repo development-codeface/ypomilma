@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
+use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
@@ -10,12 +10,13 @@ use App\Models\Vendor;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use DB;
+use Gate;
 
 class InvoiceController extends Controller
 {
-    public function index(Request $request)
+    public function indexorg(Request $request)
     {
-        $query = Invoice::with(['dairy', 'vendor']);
+         $query = Invoice::with(['dairy', 'vendor']);
 
         // --- Filters ---
         if ($request->dairy_id) {
@@ -39,83 +40,136 @@ class InvoiceController extends Controller
         return view('admin.invoices.index', compact('invoices', 'dairies', 'vendors'));
     }
 
-    public function create()
+
+    public function index(Request $request)
     {
-        $dairies = Dairy::select('id', 'name')->get();
-        $vendors = Vendor::select('id', 'name')->get();
-        $products = Product::all();
-        return view('admin.invoices.create', compact('dairies', 'vendors', 'products'));
+        abort_if(Gate::denies('invoice_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+       
+        $user = auth()->user();
+        $query = Invoice::with(['dairy', 'vendor']);
+
+        $user = auth()->user();
+        $roleName = strtolower($user->role_name);
+        
+        if ($roleName == 'dairyadmin') {
+            $dairy = \App\Models\Dairy::where('admin_userid', $user->id)->first();
+                if ($dairy) {
+                    $query->where('dairy_id', $dairy->id);
+                } else {
+                    $query->whereNull('dairy_id');
+                }
+            //  echo $dairy;exit;
+        }
+    
+        // superadmin → no filter applied
+
+        /* ------------------------------------------------------------
+            FILTERS
+        -------------------------------------------------------------*/
+        if ($request->filled('dairy_id')) {
+            $query->where('dairy_id', $request->dairy_id);
+        }
+
+        if ($request->filled('vendor_id')) {
+            $query->where('vendor_id', $request->vendor_id);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $query->whereBetween('created_at', [$request->from_date, $request->to_date]);
+        }
+
+        /* ------------------------------------------------------------
+            GET DATA
+        -------------------------------------------------------------*/
+        $invoice_list = $query->orderBy('id', 'DESC')->paginate(15);
+
+        $vendors = Vendor::all();
+        $dairies = Dairy::all();   // superadmin shows all → dairy admin shows only self in blade
+
+        return view('admin.invoice_list.index', compact('invoice_list', 'vendors', 'dairies'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'dairy_id' => 'required|exists:dairies,id',
-            'vendor_id' => 'nullable|exists:vendors,id',
-            'discount' => 'nullable|numeric',
-            'items.*.product_id' => 'required|exists:products,id',
-            'items.*.tax_type' => 'required|in:inclusive,exclusive',
-        ]);
+        public function create()
+        {
+            $dairies = Dairy::select('id', 'name')->get();
+            $vendors = Vendor::select('id', 'name')->get();
+            $products = Product::all();
+            return view('admin.invoices.create', compact('dairies', 'vendors', 'products'));
+        }
 
-        DB::transaction(function () use ($request) {
-            $lastInvoice = Invoice::lockForUpdate()->orderBy('id', 'desc')->first();
-            $num = $lastInvoice ? (int) substr($lastInvoice->id, 3) + 1 : 1;
-            $invoiceId = 'INV' . str_pad($num, 5, '0', STR_PAD_LEFT);
-
-            $invoice = Invoice::create([
-                'id' => $invoiceId,
-                'dairy_id' => $request->dairy_id,
-                'vendor_id' => $request->vendor_id,
-                'discount' => $request->discount ?? 0,
-                'total_amount' => 0,
-                'status' => 'pending',
+        public function store(Request $request)
+        {
+            $request->validate([
+                'dairy_id' => 'required|exists:dairies,id',
+                'vendor_id' => 'nullable|exists:vendors,id',
+                'discount' => 'nullable|numeric',
+                'items.*.product_id' => 'required|exists:products,id',
+                'items.*.tax_type' => 'required|in:inclusive,exclusive',
             ]);
 
-            $grandTotal = 0;
+            DB::transaction(function () use ($request) {
+                $lastInvoice = Invoice::lockForUpdate()->orderBy('id', 'desc')->first();
+                $num = $lastInvoice ? (int) substr($lastInvoice->id, 3) + 1 : 1;
+                $invoiceId = 'INV' . str_pad($num, 5, '0', STR_PAD_LEFT);
 
-            foreach ($request->items as $item) {
-                $quantity = $item['quantity'];
-                $unitPrice = $item['unit_price'];
-                $discount = $item['discount'] ?? 0;
-                $gstPercent = $item['gst_percent'];
-                $taxType = $item['tax_type'];
-
-                $baseValue = ($unitPrice * $quantity) - $discount;
-                $gstAmount = 0;
-                $itemTotal = 0;
-                $taxableValue = 0;
-
-                if ($taxType === 'inclusive') {
-                    $taxableValue = $baseValue / (1 + $gstPercent / 100);
-                    $gstAmount = $baseValue - $taxableValue;
-                    $itemTotal = $baseValue;
-                } else {
-                    $taxableValue = $baseValue;
-                    $gstAmount = $baseValue * ($gstPercent / 100);
-                    $itemTotal = $taxableValue + $gstAmount;
-                }
-
-                InvoiceItem::create([
-                    'invoice_id' => $invoice->id,
-                    'product_id' => $item['product_id'],
-                    'quantity' => $quantity,
-                    'unit_price' => $unitPrice,
-                    'gst_percent' => $gstPercent,
-                    'tax_type' => $taxType,
-                    'gst_amount' => $gstAmount,
-                    'discount' => $discount,
-                    'taxable_value' => $taxableValue,
-                    'total' => $itemTotal,
+                $invoice = Invoice::create([
+                    'id' => $invoiceId,
+                    'dairy_id' => $request->dairy_id,
+                    'vendor_id' => $request->vendor_id,
+                    'discount' => $request->discount ?? 0,
+                    'total_amount' => 0,
+                    'status' => 'pending',
                 ]);
 
-                $grandTotal += $itemTotal;
-            }
+                $grandTotal = 0;
 
-            $invoice->update(['total_amount' => $grandTotal - $invoice->discount]);
-        });
+                foreach ($request->items as $item) {
+                    $quantity = $item['quantity'];
+                    $unitPrice = $item['unit_price'];
+                    $discount = $item['discount'] ?? 0;
+                    $gstPercent = $item['gst_percent'];
+                    $taxType = $item['tax_type'];
 
-        return redirect()->route('admin.invoices.index')->with('success', 'Invoice created successfully');
-    }
+                    $baseValue = ($unitPrice * $quantity) - $discount;
+                    $gstAmount = 0;
+                    $itemTotal = 0;
+                    $taxableValue = 0;
+
+                    if ($taxType === 'inclusive') {
+                        $taxableValue = $baseValue / (1 + $gstPercent / 100);
+                        $gstAmount = $baseValue - $taxableValue;
+                        $itemTotal = $baseValue;
+                    } else {
+                        $taxableValue = $baseValue;
+                        $gstAmount = $baseValue * ($gstPercent / 100);
+                        $itemTotal = $taxableValue + $gstAmount;
+                    }
+
+                    InvoiceItem::create([
+                        'invoice_id' => $invoice->id,
+                        'product_id' => $item['product_id'],
+                        'quantity' => $quantity,
+                        'unit_price' => $unitPrice,
+                        'gst_percent' => $gstPercent,
+                        'tax_type' => $taxType,
+                        'gst_amount' => $gstAmount,
+                        'discount' => $discount,
+                        'taxable_value' => $taxableValue,
+                        'total' => $itemTotal,
+                    ]);
+
+                    $grandTotal += $itemTotal;
+                }
+
+                $invoice->update(['total_amount' => $grandTotal - $invoice->discount]);
+            });
+
+            return redirect()->route('admin.invoices.index')->with('success', 'Invoice created successfully');
+        }
 
     public function show(Invoice $invoice)
     {

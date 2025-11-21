@@ -19,6 +19,8 @@ use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\TransactionReportController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\HeadOfficeFundController;
+use App\Http\Controllers\Admin\ExpenseReportController;
+use App\Http\Controllers\Admin\AdminExpenseController;
 // Auth/Profile Controllers
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Admin\InvoiceListController;
@@ -45,6 +47,8 @@ Route::group([
     //Dashboard
     Route::get('dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
+    Route::get('expenses-summary', [App\Http\Controllers\AdminExpenseController::class, 'summary'])
+    ->name('expenses.summary');
 
     Route::resource('headoffices', HeadOfficeFundController::class)->names('headoffices');
 
@@ -73,6 +77,16 @@ Route::group([
     Route::resource('products', ProductController::class);
     Route::resource('expense_categories', ExpenseCategoryController::class);
     Route::resource('fund_allocations', FundAllocationController::class);
+    // Adjust fund page
+    Route::get('fund_allocations/{id}/adjust', 
+        [App\Http\Controllers\Admin\FundAllocationController::class, 'adjust']
+    )->name('fund_allocations.adjust');
+
+    // Process adjustment (increase / decrease)
+    Route::post('fund_allocations/{id}/adjust', 
+        [App\Http\Controllers\Admin\FundAllocationController::class, 'updateAdjust']
+    )->name('fund_allocations.updateAdjust');
+
     Route::resource('invoices', InvoiceController::class);
     Route::resource('expenseitems', ExpenseItemController::class);
     Route::post('invoices/{invoice}/cancel', [InvoiceController::class, 'cancel'])
@@ -81,7 +95,9 @@ Route::group([
     // Invoice List
     Route::get('invoice-list', [InvoiceListController::class, 'index'])->name('invoice-list.index');
     Route::post('invoice/status/change/{id}', [InvoiceListController::class, 'statusChange'])->name('invoice.status.change');
-
+    Route::get('get-invoice-items/{invoice_id}', [InvoiceListController::class, 'getInvoiceItems']);
+    Route::get('invoice/{invoice}/deliveries', [\App\Http\Controllers\Admin\InvoiceListController::class, 'deliveryHistory'])
+    ->name('invoice.deliveries');
 
     //Asset Management
     Route::get('asset-management', [AssetController::class, 'index'])->name('asset-management.index');
@@ -103,6 +119,10 @@ Route::group([
     Route::get('expenses/items/{categoryId}', [ExpenseController::class, 'getItemsByCategory'])->name('expenses.items');
     Route::get('/transactions', [TransactionReportController::class, 'index'])->name('transactions.index');
     Route::get('/transactions/export', [TransactionReportController::class, 'export'])->name('transactions.export');
+    
+    // Expense Report
+    Route::get('expenses-report', [ExpenseReportController::class, 'index'])->name('expensereport.index');
+    Route::get('expenses-report/export', [ExpenseReportController::class, 'export'])->name('expenses.export');
 });
 
 // Profile / Change Password Routes

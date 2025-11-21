@@ -1,13 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
+use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\AggencySale;
 use App\Models\AggencyBill;
 use App\Models\Dairy;
 use App\Models\Agency;
+use Gate;
 
 class AggencySaleController extends Controller
 {
@@ -18,6 +19,7 @@ class AggencySaleController extends Controller
      */
     public function index(Request $request)
     {
+        abort_if(Gate::denies('agency_sale_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $user_id = auth()->user()->id;
         $dairy_id = Dairy::where('admin_userid', $user_id)->pluck('id')->first();
         // $data['agency_name'] = AggencySale::select('name')->distinct()->get();
@@ -48,6 +50,7 @@ class AggencySaleController extends Controller
      */
     public function show($id)
     {
+        abort_if(Gate::denies('agency_sale_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $data['aggencyShow'] = AggencyBill::with('product')->where('aggency_sale_id', $id)->get();
         return view('admin.aggency_sale.show', $data);
     }

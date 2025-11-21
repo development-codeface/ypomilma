@@ -3,12 +3,11 @@
     <div class="card">
         <div class="card-header">
             <p><i class="fi fi-br-list mr_15_icc"></i> Agency List</p>
-            @can('agency_create')
+           
                 <a href="{{ route('admin.aggency.create') }}" class="btn btn-success">
                     <i class="fi fi-br-plus-small mr_5"></i> Add
                 </a>
-            @endcan
-        </div>
+         </div>
 
         <div class="card-body">
             @if (session('success'))

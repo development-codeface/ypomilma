@@ -105,6 +105,7 @@
                                     : 'N/A' }}
                             </td>
 
+                            
                              <td>
                                 <a href="{{ route('admin.invoices.show', $invoice->id) }}" class="btn btn-xs btn-primary">
                                     <i class="fi fi-br-eye"></i>

@@ -13,7 +13,13 @@
         <form method="GET" action="{{ route('admin.expenses.index') }}" class="mb-3">
             <div class="row g-3 align-items-end">
 
-                @if(auth()->user()->role === 'superadmin')
+                 @php
+                    $user = auth()->user();
+                    $roleName = strtolower($user->role_name);
+                @endphp
+
+                {{-- SUPERADMIN: show dairy filter --}}
+                @if ($roleName === 'superadmin')
                     <div class="col-md-3">
                         <label for="dairy_id">Dairy</label>
                         <select name="dairy_id" id="dairy_id" class="form-control">

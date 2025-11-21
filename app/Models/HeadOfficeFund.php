@@ -14,5 +14,6 @@ class HeadOfficeFund extends Model
     protected $fillable = [
         'financial_year',
         'amount',
+        'balance_amount'
     ];
 }

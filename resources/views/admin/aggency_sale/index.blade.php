@@ -2,7 +2,7 @@
 @section('content')
     <div class="card">
         <div class="card-header">
-            <p><i class="fi fi-br-list mr_15_icc"></i> Aggency Sale List</p>
+            <p><i class="fi fi-br-list mr_15_icc"></i> Agency Sale List</p>
             {{-- <a href="{{ route('admin.asset-management.create') }}" class="btn btn-success">
                 <i class="fi fi-br-plus-small mr_5"></i> Add
             </a> --}}

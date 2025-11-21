@@ -50,6 +50,7 @@
                         <th>#</th>
                         <th>Product</th>
                         <th>Qty</th>
+                        <th>Pending Qty</th>
                         <th>Unit Price</th>
                         <th>GST %</th>
                         <th>Tax Type</th>
@@ -65,6 +66,7 @@
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $item->product->productname }}</td>
                             <td>{{ $item->quantity }}</td>
+                            <td>{{ ($item->quantity ?? 0) - ($item->delivered_quantity ?? 0) }}</td>
                             <td>{{ number_format($item->unit_price, 2) }}</td>
                             <td>{{ $item->gst_percent }}%</td>
                             <td>

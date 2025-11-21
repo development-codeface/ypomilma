@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 use App\Models\Agency;
 use App\Models\Dairy;
+use Gate;
 
 class AgencyController extends Controller
 {
@@ -14,6 +16,7 @@ class AgencyController extends Controller
      */
     public function index()
     {
+        abort_if(Gate::denies('agency_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $user_id = auth()->user()->id;
         $dairy_id = Dairy::where('admin_userid', $user_id)->pluck('id')->first();
         $agency_data = Agency::query();
@@ -26,6 +29,7 @@ class AgencyController extends Controller
      */
     public function create()
     {
+        abort_if(Gate::denies('agency_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         return view('admin.agency.create');
     }
 
@@ -34,6 +38,7 @@ class AgencyController extends Controller
      */
     public function store(Request $request)
     {
+        abort_if(Gate::denies('agency_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $request->validate([
             'name'     => 'required|string|max:255',
             'address'     => 'required',
@@ -71,6 +76,7 @@ class AgencyController extends Controller
      */
     public function edit(string $id)
     {
+        abort_if(Gate::denies('agency_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $data['edit_agency'] = Agency::findOrFail($id);
         return view('admin.agency.edit', $data);
     }
@@ -80,6 +86,7 @@ class AgencyController extends Controller
      */
     public function update(Request $request, string $id)
     {
+         abort_if(Gate::denies('agency_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $request->validate([
             'name'     => 'required|string|max:255',
             'address'     => 'required',
@@ -108,6 +115,7 @@ class AgencyController extends Controller
     public function destroy(string $id)
     {
         //
+         abort_if(Gate::denies('agency_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $delete_agency = Agency::findOrFail($id);
         $delete_agency->delete();
         return redirect()->route('admin.aggency.index')->with('success', 'Agency deleted successfully.');

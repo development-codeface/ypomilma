@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Dairy;
 use App\Models\FundAllocation;
+use App\Models\HeadOfficeFund;
 use App\Models\Expense;
 use App\Models\Transactions;
 use App\Models\Invoice;
@@ -40,9 +41,12 @@ class DashboardController extends Controller
         $totalAllocatedFund = FundAllocation::whereBetween('created_at', [$financialYearStart, $financialYearEnd])
             ->sum('amount');
 
-        $totalExpenses = Transactions::whereBetween('created_at', [$financialYearStart, $financialYearEnd])
-            ->whereIn('type', ['debit', 'hold'])
-            ->sum('amount');
+        // $totalExpenses = Transactions::whereBetween('created_at', [$financialYearStart, $financialYearEnd])
+        //     ->whereIn('type', ['debit', 'hold'])
+        //     ->sum('amount');
+
+        $totalExpenses = Expense::whereBetween('created_at', [$financialYearStart, $financialYearEnd])
+             ->sum('amount');
 
         $totalBalance = $totalAllocatedFund - $totalExpenses;
 
@@ -54,10 +58,19 @@ class DashboardController extends Controller
                 ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
                 ->sum('amount');
 
-            $expenses = Transactions::where('dairy_id', $dairy->id)
+            // $expenses = Transactions::where('dairy_id', $dairy->id)
+            //     ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
+            //     ->whereIn('type', ['debit', 'hold'])
+            //     ->sum('amount');
+
+            $onhold = Transactions::where('dairy_id', $dairy->id)
                 ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
-                ->whereIn('type', ['debit', 'hold'])
+                ->whereIn('type', [ 'hold'])
                 ->sum('amount');
+
+             $expenses = Expense::where('dairy_id', $dairy->id)
+                 ->whereBetween('created_at', [$financialYearStart, $financialYearEnd])
+                 ->sum('amount');
 
             $balance = $allocated - $expenses;
 
@@ -67,6 +80,7 @@ class DashboardController extends Controller
                 'allocated' => $allocated,
                 'expenses' => $expenses,
                 'balance' => $balance,
+                'onhold' => $onhold,
             ];
         }
 
@@ -127,6 +141,19 @@ class DashboardController extends Controller
             ->map(fn($year) => ($year - 1) . '-' . $year);
     }
 
+    // Get Head Office fund for selected year
+    $headOffice = HeadOfficeFund::where('financial_year', $selectedYear)->first();
+
+    // Total Budget
+    $totalHOBudget = $headOffice ? $headOffice->amount : 0;
+
+    // Total allocated from HO for this year
+    $totalAllocatedFromHO = FundAllocation::where('financial_year', $selectedYear)->sum('amount');
+
+    // Remaining Balance = Budget - Allocated
+    $remainingHOBalance = $totalHOBudget - $totalAllocatedFromHO;
+
+
     return view('admin.dashboard', compact(
         'totalAllocatedFund',
         'totalExpenses',
@@ -138,7 +165,9 @@ class DashboardController extends Controller
         'chartData',
         'selectedYear',
         'financialYears',
-        'role'
+        'role',
+        'totalHOBudget',        // <- add
+        'remainingHOBalance'
     ));
 }
 
