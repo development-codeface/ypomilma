@@ -214,4 +214,50 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    // Show/hide serial details section
+$("#enable_serial_details").on("change", function () {
+    if ($(this).is(":checked")) {
+        $("#serialDetailsContainer").show();
+    } else {
+        $("#serialDetailsContainer").hide();
+        $("#serialRepeater").html("");
+    }
+});
+
+// Add repeater row
+$(document).on("click", "#addSerialBtn", function () {
+    let index = $("#serialRepeater .serialRow").length;
+
+    $("#serialRepeater").append(`
+        <div class="serialRow border p-2 mb-2">
+            <div class="row">
+                <div class="col-md-3">
+                    <label>Brand</label>
+                    <input type="text" class="form-control" name="serial_items[${index}][brand]">
+                </div>
+                <div class="col-md-3">
+                    <label>Model</label>
+                    <input type="text" class="form-control" name="serial_items[${index}][model]">
+                </div>
+                <div class="col-md-3">
+                    <label>Serial No</label>
+                    <input type="text" class="form-control" name="serial_items[${index}][serial_no]">
+                </div>
+                <div class="col-md-2">
+                    <label>Warranty</label>
+                    <input type="text" class="form-control" name="serial_items[${index}][warranty]">
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="button" class="btn btn-danger btn-sm removeSerialRow">&times;</button>
+                </div>
+            </div>
+        </div>
+    `);
+});
+
+$(document).on("click", ".removeSerialRow", function () {
+    $(this).closest(".serialRow").remove();
+});
+
+
 });

@@ -51,7 +51,11 @@ class AggencySaleController extends Controller
     public function show($id)
     {
         abort_if(Gate::denies('agency_sale_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $data['aggencyShow'] = AggencyBill::with('product')->where('aggency_sale_id', $id)->get();
+        //$data['aggencyShow'] = AggencyBill::with('product')->where('aggency_sale_id', $id)->get();
+        $data['aggencyShow'] = AggencyBill::with(['product', 'units'])
+        ->where('aggency_sale_id', $id)
+        ->get();
+
         return view('admin.aggency_sale.show', $data);
     }
 }

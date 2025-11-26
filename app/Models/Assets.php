@@ -19,6 +19,10 @@ class Assets extends Model
         'quantity',
         'invoice_refno',
         'status',
+        'brand',
+        'model',
+        'serial_no',
+        'warranty',
     ];
 
     public function dairy()

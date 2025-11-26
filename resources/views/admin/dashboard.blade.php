@@ -102,7 +102,7 @@
             <div class="p-3 bg-light rounded shadow-sm">
                 <div>
                     <h6>Active Dairy Units</h6>
-                    <h2 class="text-primary">4</h2>
+                    <h2 class="text-primary">{{ $activeDairyUnits }}</h2>
                 </div>
                 <div>
                     <i class="fa-solid fa-building text-purple"></i>
@@ -112,6 +112,26 @@
 
     </div>
 </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="card-title"><i class="fa-solid fa-chart-line mr-2"></i>Dairy Funds vs Expenses</h4>
+            </div>
+            <div class="card-body">
+                <canvas id="fundExpenseChart" height="100"></canvas>
+
+            </div>
+        </div>
+
+        <!-- <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="card-title"><i class="fa-solid fa-wave-square mr-2"></i>Utilization Trend</h4>
+            </div>
+            <div class="card-body">
+                <div id="utilizationChart" style="height: 350px;"></div>
+            </div>
+        </div> -->
+
 
                     {{-- Dairy Units Financial Summary --}}
                  
@@ -140,19 +160,31 @@
                 <tbody>
                     @foreach($dairySummaries as $dairy)
                     @php
-                        $allocated = $dairy['allocated'] ?? 0;
-                        $expenses = $dairy['expenses'] ?? 0;
-                        $balance = $dairy['balance'] ?? 0;
+                        $allocated   = $dairy['allocated'] ?? 0;
+                        $expenses    = $dairy['expenses'] ?? 0;
+                        $balance     = $dairy['balance'] ?? 0;
                         $utilization = $allocated > 0 ? round(($expenses / $allocated) * 100, 0) : 0;
-                        $status = $utilization >= 85 ? 'High Usage' : 'Active';
+                        $status      = $utilization >= 85 ? 'High Usage' : 'Active';
                         $statusClass = $utilization >= 85 ? 'bg-warning text-dark' : 'bg-success';
                     @endphp
-                    <tr>
+                        <tr>
                         <td><i class="fa-solid fa-building text-primary mr-2"></i>{{ $dairy['name'] ?? 'N/A' }}</td>
                         <td>₹ {{ number_format($allocated, 2) }}</td>
                         <td>₹ {{ number_format($expenses, 2) }}</td>
                         <td class="text-success">₹ {{ number_format($balance, 2) }}</td>
-                        <td>{{ $utilization }}%</td>
+                        <td style="width:180px;">
+                            @php
+                                $barColor = $utilization >= 85 ? '#ff8c26' : '#1f7cff'; // orange or blue
+                            @endphp
+
+                            <div class="d-flex align-items-center">
+                                <div class="util-bar-container">
+                                    <div class="util-bar" style="width: {{ $utilization }}%; background-color: {{ $barColor }};"></div>
+                                </div>
+                                <span class="ml-2 font-weight-bold">{{ $utilization }}%</span>
+                            </div>
+                        </td>
+
                         <td><span class="badge {{ $statusClass }}">{{ $status }}</span></td>
                     
                     </tr>
@@ -234,5 +266,80 @@
 </div>
 
 {{-- Font Awesome --}}
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{{-- Font Awesome --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+{{-- Chart.js --}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+@if($role->title == 'SuperAdmin')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    const fundCanvas = document.getElementById('fundExpenseChart');
+    //const utilCanvas = document.getElementById('utilizationChart');
+
+    if (fundCanvas instanceof HTMLCanvasElement) {
+        new Chart(fundCanvas, {
+            type: 'bar',
+            data: {
+                labels: @json($chartLabels),
+                datasets: [
+                    {
+                        label: 'Allocated',
+                        data: @json($allocatedChart),
+                        backgroundColor: 'rgba(37, 99, 235, 0.7)',
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'Expenses',
+                        data: @json($expensesChart),
+                        backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                        borderRadius: 6
+                    }
+                ]
+            },
+            options: { responsive: true }
+        });
+    }
+
+    // if (utilCanvas instanceof HTMLCanvasElement) {
+    //     new Chart(utilCanvas, {
+    //         type: 'line',
+    //         data: {
+    //             labels: @json($chartLabels),
+    //             datasets: [
+    //                 {
+    //                     label: 'Utilization %',
+    //                     data: @json($utilizationChart),
+    //                     borderColor: 'rgba(37, 99, 235, 1)',
+    //                     tension: 0.4
+    //                 }
+    //             ]
+    //         },
+    //         options: { responsive: true }
+    //     });
+    // }
+
+});
+</script>
+@endif
+
+
+<style>
+.util-bar-container {
+    width: 100px;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.util-bar {
+    height: 6px;
+    border-radius: 5px;
+    transition: width 0.4s ease;
+}
+</style>
 @endsection

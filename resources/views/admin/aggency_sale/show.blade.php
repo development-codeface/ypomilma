@@ -67,14 +67,25 @@
                     <tbody>
                         @forelse($aggencyShow as $value)
                             <tr>
-                                <td>{{ $value->product->productname ?? 'N/A' }}</td>
-                                <td>{{ $value->quantity ?? 'N/A' }}</td>
-                                <td>{{ $value->price ?? 'N/A' }}</td>
-                                <td>{{ $value->discount ?? 'N/A' }}</td>
-                                <td>{{ $value->gst_percent ?? 'N/A' }}</td>
-                                <td>{{ $value->tax_type ?? 'N/A' }}</td>
-                                <td>{{ $value->total ?? 'N/A' }}</td>
-                            </tr>
+                            <td>{{ $value->product->productname ?? 'N/A' }}</td>
+                            <td>{{ $value->quantity ?? 'N/A' }}</td>
+                            <td>{{ $value->price ?? 'N/A' }}</td>
+                            <td>{{ $value->discount ?? 'N/A' }}</td>
+                            <td>{{ $value->gst_percent ?? 'N/A' }}</td>
+                            <td>{{ $value->tax_type ?? 'N/A' }}</td>
+                            <td>{{ $value->total ?? 'N/A' }}
+
+                                @if($value->units && $value->units->count() > 0)
+                                    <br>
+                                    <button class="btn btn-sm btn-primary mt-1 viewUnitsBtn"
+                                            data-units='@json($value->units)'>
+                                        View Unit Details
+                                    </button>
+                                @endif
+
+                            </td>
+                        </tr>
+
                         @empty
                             <tr>
                                 <td colspan="7" class="text-center">No Aggency List found</td>
@@ -91,4 +102,61 @@
 
         </div>
     </div>
+
+    <!-- Modal -->
+<div class="modal fade" id="unitDetailsModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Unit Details</h5>
+       <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+           
+      </div>
+
+      <div class="modal-body" id="unitDetailsBody">
+      </div>
+
+    </div>
+  </div>
+</div>
+
 @endsection
+<script>
+    document.addEventListener("click", function(e){
+    if (e.target.classList.contains("viewUnitsBtn")) {
+
+        let units = JSON.parse(e.target.dataset.units);
+        let modalBody = document.getElementById("unitDetailsBody");
+
+        modalBody.innerHTML = `
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Serial No</th>
+                        <th>Brand</th>
+                        <th>Model</th>
+                        <th>Warranty</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${
+                        units.map(u => `
+                            <tr>
+                                <td>${u.serial_no ?? '-'}</td>
+                                <td>${u.brand ?? '-'}</td>
+                                <td>${u.model ?? '-'}</td>
+                                <td>${u.warranty ?? '-'}</td>
+                                <td>${u.description ?? '-'}</td>
+                            </tr>
+                        `).join('')
+                    }
+                </tbody>
+            </table>
+        `;
+
+        $('#unitDetailsModal').modal('show');
+    }
+});
+</script>

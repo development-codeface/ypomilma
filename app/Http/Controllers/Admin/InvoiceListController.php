@@ -234,29 +234,55 @@ public function statusChange(Request $request, $invoice_id)
         $item->pending_quantity = $item->quantity - $newDelivered;
         $item->save();
 
-        // Update or create Assets entry:
-        // If existing asset for same product & invoice_refno exists -> increment qty
-        $existingAsset = Assets::where('invoice_refno', $invoice_id)
-            ->where('product_id', $item->product_id)
-            ->first();
+        // CASE 1 — If user entered serial details (each item separate asset row)
+        if ($request->has('serial_items')) {
 
-        if ($existingAsset) {
-            $existingAsset->quantity += (int)$request->delivered_quantity;
-            $existingAsset->save();
-        } else {
-            Assets::create([
-                'invoice_items_id' => $item->id,
-                'dairy_id'         => $invoice->dairy_id,
-                'quantity'         => (int)$request->delivered_quantity,
-                'product_id'       => $item->product_id,
-                'purchase_value'   => $item->total,
-                'purchase_date'    => now()->toDateString(),
-                'sold_price'       => 0,
-                'discount'         => $item->discount,
-                'invoice_refno'    => $invoice_id,
-                'status'           => 'available',
-            ]);
+            foreach ($request->serial_items as $details) {
+                Assets::create([
+                    'invoice_items_id' => $item->id,
+                    'dairy_id'         => $invoice->dairy_id,
+                    'quantity'         => 1, // always 1
+                    'product_id'       => $item->product_id,
+                    'purchase_value'   => $item->total,
+                    'purchase_date'    => now()->toDateString(),
+                    'sold_price'       => 0,
+                    'discount'         => $item->discount,
+                    'invoice_refno'    => $invoice->id,
+                    'status'           => 'available',
+
+                    // NEW FIELDS
+                    'brand'            => $details['brand'] ?? null,
+                    'model'            => $details['model'] ?? null,
+                    'serial_no'        => $details['serial_no'] ?? null,
+                    'warranty'         => $details['warranty'] ?? null,
+                ]);
+            }
         }
+        // CASE 2 — No serial details — simple qty addition
+        else {
+            $existingAsset = Assets::where('invoice_refno', $invoice_id)
+                ->where('product_id', $item->product_id)
+                ->first();
+
+            if ($existingAsset) {
+                $existingAsset->quantity += (int)$request->delivered_quantity;
+                $existingAsset->save();
+            } else {
+                Assets::create([
+                    'invoice_items_id' => $item->id,
+                    'dairy_id'         => $invoice->dairy_id,
+                    'quantity'         => (int)$request->delivered_quantity,
+                    'product_id'       => $item->product_id,
+                    'purchase_value'   => $item->total,
+                    'purchase_date'    => now()->toDateString(),
+                    'sold_price'       => 0,
+                    'discount'         => $item->discount,
+                    'invoice_refno'    => $invoice_id,
+                    'status'           => 'available',
+                ]);
+            }
+        }
+
 
         // Now check if entire invoice fully delivered
 

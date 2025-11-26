@@ -207,6 +207,27 @@
                         <input class="form-control" type="number" name="delivered_quantity" id="delivered_quantity">
                     </div>
 
+                    <div class="form-group mb-3">
+                    <label>
+                        <input type="checkbox" id="enable_serial_details"> This product has Serial/Warranty details
+                    </label>
+                </div>
+
+                <div id="serialDetailsContainer" style="display:none; border:1px solid #ccc; padding:10px; border-radius:6px;">
+                    <h6>Enter Details for Each Unit</h6>
+
+                    <div id="serialRepeater"></div>
+
+                    <button type="button" class="btn btn-sm btn-success my-2" id="addSerialBtn">
+                        + Add Item Detail
+                    </button>
+
+                    <small class="text-danger">
+                        If delivered quantity is 10, you must add 10 serial entries.
+                    </small>
+                </div>
+
+
                 <!-- <div class="form-group mb-3">
                         <label>Warranty</label>
                         <input class="form-control" type="text" name="warranty" id="warranty" placeholder="e.g. 12 months">

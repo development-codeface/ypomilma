@@ -32,4 +32,10 @@ class AggencyBill extends Model
             'product_id' // Local key on Asset table
         );
     }
+
+    public function units()
+    {
+        return $this->hasMany(AggencyBillUnit::class, 'aggency_bill_id');
+    }
+
 }
