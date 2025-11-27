@@ -38,6 +38,13 @@ CREATE TABLE `accounts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
+--
+-- Dumping data for table `accounts`
+--
+
+INSERT INTO `accounts` (`id`, `dairy_id`, `fund_id`, `opening_balance`, `main_balance`, `created_at`, `updated_at`) VALUES
+(1, 1, NULL, 0.00, 0.00, '2025-11-25 14:59:10', '2025-11-26 05:48:51'),
+(2, 2, NULL, 0.00, 0.00, '2025-11-26 05:03:37', '2025-11-26 05:03:37');
 
 --
 -- Table structure for table `agencies`
@@ -179,6 +186,10 @@ CREATE TABLE `dairies` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `dairies` (`id`, `name`, `location`, `admin_userid`, `phone`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'Head Office', 'Trivandrum', '1', '', NULL, NULL, NULL),
+(2, 'Test unit', 'Trivandrum', '4', '9632587410', '2025-11-25 14:54:59', '2025-11-25 14:54:59', NULL);
 
 -- --------------------------------------------------------
 
